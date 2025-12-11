@@ -2,21 +2,13 @@ import clickhouse from '@/lib/clickhouse';
 import { EVENT_COLUMNS } from '@/lib/constants';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getWebsiteSessionStats';
-
-export interface WebsiteSessionStatsData {
-  pageviews: number;
-  visitors: number;
-  visits: number;
-  countries: number;
-  events: number;
-}
+import { QueryFilters } from '@/lib/types';
 
 export async function getWebsiteSessionStats(
   ...args: [websiteId: string, filters: QueryFilters]
-): Promise<WebsiteSessionStatsData[]> {
+): Promise<
+  { pageviews: number; visitors: number; visits: number; countries: number; events: number }[]
+> {
   return runQuery({
     [PRISMA]: () => relationalQuery(...args),
     [CLICKHOUSE]: () => clickhouseQuery(...args),
@@ -26,11 +18,12 @@ export async function getWebsiteSessionStats(
 async function relationalQuery(
   websiteId: string,
   filters: QueryFilters,
-): Promise<WebsiteSessionStatsData[]> {
+): Promise<
+  { pageviews: number; visitors: number; visits: number; countries: number; events: number }[]
+> {
   const { parseFilters, rawQuery } = prisma;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
   });
 
   return rawQuery(
@@ -44,22 +37,24 @@ async function relationalQuery(
     from website_event
     ${cohortQuery}
     join session on website_event.session_id = session.session_id
-      and website_event.website_id = session.website_id
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
       ${filterQuery}
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
 async function clickhouseQuery(
   websiteId: string,
   filters: QueryFilters,
-): Promise<WebsiteSessionStatsData[]> {
+): Promise<
+  { pageviews: number; visitors: number; visits: number; countries: number; events: number }[]
+> {
   const { rawQuery, parseFilters } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({ ...filters, websiteId });
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
+    ...filters,
+  });
 
   let sql = '';
 
@@ -93,5 +88,5 @@ async function clickhouseQuery(
     `;
   }
 
-  return rawQuery(sql, queryParams, FUNCTION_NAME);
+  return rawQuery(sql, params);
 }

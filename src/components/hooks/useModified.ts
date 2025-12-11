@@ -1,13 +1,15 @@
-import { create } from 'zustand';
-
-const store = create(() => ({}));
-
-export function touch(key: string) {
-  store.setState({ [key]: Date.now() });
-}
+import useStore from '@/store/modified';
 
 export function useModified(key?: string) {
-  const modified = store(state => state?.[key]);
+  const modified = useStore(state => state?.[key]);
+
+  const touch = (id?: string) => {
+    if (id || key) {
+      useStore.setState({ [id || key]: Date.now() });
+    }
+  };
 
   return { modified, touch };
 }
+
+export default useModified;

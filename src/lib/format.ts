@@ -77,20 +77,20 @@ export function stringToColor(str: string) {
   let color = '#';
   for (let i = 0; i < 3; i++) {
     const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
+    color += ('00' + value.toString(16)).slice(-2);
   }
   return color;
 }
 
 export function formatCurrency(value: number, currency: string, locale = 'en-US') {
-  let formattedValue: Intl.NumberFormat;
+  let formattedValue;
 
   try {
     formattedValue = new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
     });
-  } catch {
+  } catch (error) {
     // Fallback to default currency format if an error occurs
     formattedValue = new Intl.NumberFormat(locale, {
       style: 'currency',

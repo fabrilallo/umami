@@ -1,26 +1,26 @@
 /* eslint-disable no-console */
-import 'dotenv/config';
-import { execSync } from 'node:child_process';
-import { PrismaPg } from '@prisma/adapter-pg';
-import chalk from 'chalk';
-import semver from 'semver';
-import { PrismaClient } from '../generated/prisma/client.js';
-
-const MIN_VERSION = '9.4.0';
+require('dotenv').config();
+const { PrismaClient } = require('@prisma/client');
+const chalk = require('chalk');
+const { execSync } = require('child_process');
+const semver = require('semver');
 
 if (process.env.SKIP_DB_CHECK) {
   console.log('Skipping database check.');
   process.exit(0);
 }
 
-const url = new URL(process.env.DATABASE_URL);
+function getDatabaseType(url = process.env.DATABASE_URL) {
+  const type = url && url.split(':')[0];
 
-const adapter = new PrismaPg(
-  { connectionString: url.toString() },
-  { schema: url.searchParams.get('schema') },
-);
+  if (type === 'postgres') {
+    return 'postgresql';
+  }
 
-const prisma = new PrismaClient({ adapter });
+  return type;
+}
+
+const prisma = new PrismaClient();
 
 function success(msg) {
   console.log(chalk.greenBright(`✓ ${msg}`));
@@ -35,10 +35,6 @@ async function checkEnv() {
     throw new Error('DATABASE_URL is not defined.');
   } else {
     success('DATABASE_URL is defined.');
-  }
-
-  if (process.env.REDIS_URL) {
-    success('REDIS_URL is defined.');
   }
 }
 
@@ -56,13 +52,33 @@ async function checkDatabaseVersion() {
   const query = await prisma.$queryRaw`select version() as version`;
   const version = semver.valid(semver.coerce(query[0].version));
 
-  if (semver.lt(version, MIN_VERSION)) {
+  const databaseType = getDatabaseType();
+  const minVersion = databaseType === 'postgresql' ? '9.4.0' : '5.7.0';
+
+  if (semver.lt(version, minVersion)) {
     throw new Error(
-      `Database version is not compatible. Please upgrade to ${MIN_VERSION} or greater.`,
+      `Database version is not compatible. Please upgrade ${databaseType} version to ${minVersion} or greater`,
     );
   }
 
   success('Database version check successful.');
+}
+
+async function checkV1Tables() {
+  try {
+    // check for v1 migrations before v2 release date
+    const record =
+      await prisma.$queryRaw`select * from _prisma_migrations where started_at < '2023-04-17'`;
+
+    if (record.length > 0) {
+      error(
+        'Umami v1 tables detected. For how to upgrade from v1 to v2 go to https://umami.is/docs/migrate-v1-v2.',
+      );
+      process.exit(1);
+    }
+  } catch (e) {
+    // Ignore
+  }
 }
 
 async function applyMigration() {
@@ -75,13 +91,14 @@ async function applyMigration() {
 
 (async () => {
   let err = false;
-  for (const fn of [checkEnv, checkConnection, checkDatabaseVersion, applyMigration]) {
+  for (let fn of [checkEnv, checkConnection, checkDatabaseVersion, checkV1Tables, applyMigration]) {
     try {
       await fn();
     } catch (e) {
       error(e.message);
       err = true;
     } finally {
+      await prisma.$disconnect();
       if (err) {
         process.exit(1);
       }

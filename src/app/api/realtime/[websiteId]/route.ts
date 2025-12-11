@@ -1,9 +1,9 @@
+import { json, unauthorized } from '@/lib/response';
+import { getRealtimeData } from '@/queries';
+import { canViewWebsite } from '@/lib/auth';
 import { startOfMinute, subMinutes } from 'date-fns';
 import { REALTIME_RANGE } from '@/lib/constants';
-import { getQueryFilters, parseRequest } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { canViewWebsite } from '@/permissions';
-import { getRealtimeData } from '@/queries/sql';
+import { parseRequest } from '@/lib/request';
 
 export async function GET(
   request: Request,
@@ -16,21 +16,15 @@ export async function GET(
   }
 
   const { websiteId } = await params;
+  const { timezone } = query;
 
   if (!(await canViewWebsite(auth, websiteId))) {
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(
-    {
-      ...query,
-      startAt: subMinutes(startOfMinute(new Date()), REALTIME_RANGE).getTime(),
-      endAt: Date.now(),
-    },
-    websiteId,
-  );
+  const startDate = subMinutes(startOfMinute(new Date()), REALTIME_RANGE);
 
-  const data = await getRealtimeData(websiteId, filters);
+  const data = await getRealtimeData(websiteId, { startDate, timezone });
 
   return json(data);
 }

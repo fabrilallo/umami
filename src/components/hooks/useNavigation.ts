@@ -1,43 +1,32 @@
+import { useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { buildPath } from '@/lib/url';
+import { buildUrl } from '@/lib/url';
 
-export function useNavigation() {
+export function useNavigation(): {
+  pathname: string;
+  query: { [key: string]: string };
+  router: any;
+  renderUrl: (params: any, reset?: boolean) => string;
+} {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [, teamId] = pathname.match(/\/teams\/([a-f0-9-]+)/) || [];
-  const [, websiteId] = pathname.match(/\/websites\/([a-f0-9-]+)/) || [];
-  const [queryParams, setQueryParams] = useState(Object.fromEntries(searchParams));
+  const params = useSearchParams();
 
-  const updateParams = (params?: Record<string, string | number>) => {
-    return buildPath(pathname, { ...queryParams, ...params });
-  };
+  const query = useMemo(() => {
+    const obj = {};
 
-  const replaceParams = (params?: Record<string, string | number>) => {
-    return buildPath(pathname, params);
-  };
+    for (const [key, value] of params.entries()) {
+      obj[key] = value;
+    }
 
-  const renderUrl = (path: string, params?: Record<string, string | number> | false) => {
-    return buildPath(
-      teamId ? `/teams/${teamId}${path}` : path,
-      params === false ? {} : { ...queryParams, ...params },
-    );
-  };
+    return obj;
+  }, [params]);
 
-  useEffect(() => {
-    setQueryParams(Object.fromEntries(searchParams));
-  }, [searchParams.toString()]);
+  function renderUrl(params: any, reset?: boolean) {
+    return reset ? pathname : buildUrl(pathname, { ...query, ...params });
+  }
 
-  return {
-    router,
-    pathname,
-    searchParams,
-    query: queryParams,
-    teamId,
-    websiteId,
-    updateParams,
-    replaceParams,
-    renderUrl,
-  };
+  return { pathname, query, router, renderUrl };
 }
+
+export default useNavigation;

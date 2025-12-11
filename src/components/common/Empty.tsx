@@ -1,24 +1,20 @@
-import { Row } from '@umami/react-zen';
+import classNames from 'classnames';
 import { useMessages } from '@/components/hooks';
+import styles from './Empty.module.css';
 
 export interface EmptyProps {
   message?: string;
+  className?: string;
 }
 
-export function Empty({ message }: EmptyProps) {
+export function Empty({ message, className }: EmptyProps) {
   const { formatMessage, messages } = useMessages();
 
   return (
-    <Row
-      color="muted"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-      minHeight="70px"
-      flexGrow={1}
-    >
+    <div className={classNames(styles.container, className)}>
       {message || formatMessage(messages.noDataAvailable)}
-    </Row>
+    </div>
   );
 }
+
+export default Empty;

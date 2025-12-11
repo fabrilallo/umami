@@ -1,12 +1,21 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { App } from './App';
+import { Metadata } from 'next';
+import App from './App';
+import NavBar from './NavBar';
+import Page from '@/components/layout/Page';
+import styles from './layout.module.css';
 
-export default function ({ children }) {
+export default async function ({ children }) {
   return (
-    <Suspense>
-      <App>{children}</App>
-    </Suspense>
+    <App>
+      <main className={styles.layout}>
+        <nav className={styles.nav}>
+          <NavBar />
+        </nav>
+        <section className={styles.body}>
+          <Page>{children}</Page>
+        </section>
+      </main>
+    </App>
   );
 }
 

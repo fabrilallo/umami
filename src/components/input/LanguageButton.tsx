@@ -1,41 +1,53 @@
-import { Button, Dialog, Grid, Icon, MenuTrigger, Popover, Text } from '@umami/react-zen';
-import { Globe } from 'lucide-react';
-import { useLocale } from '@/components/hooks';
+import { Icon, Button, PopupTrigger, Popup } from 'react-basics';
+import classNames from 'classnames';
 import { languages } from '@/lib/lang';
+import { useLocale } from '@/components/hooks';
+import Icons from '@/components/icons';
+import styles from './LanguageButton.module.css';
 
 export function LanguageButton() {
-  const { locale, saveLocale } = useLocale();
+  const { locale, saveLocale, dir } = useLocale();
   const items = Object.keys(languages).map(key => ({ ...languages[key], value: key }));
 
-  function handleSelect(value: string) {
+  function handleSelect(value: string, close: () => void, e: MouseEvent) {
+    e.stopPropagation();
     saveLocale(value);
+    close();
   }
 
   return (
-    <MenuTrigger key="language">
+    <PopupTrigger>
       <Button variant="quiet">
         <Icon>
-          <Globe />
+          <Icons.Globe />
         </Icon>
       </Button>
-      <Popover placement="bottom end">
-        <Dialog variant="menu">
-          <Grid columns="repeat(3, minmax(200px, 1fr))" overflow="hidden">
-            {items.map(({ value, label }) => {
-              return (
-                <Button key={value} variant="quiet" onPress={() => handleSelect(value)}>
-                  <Text
-                    weight={value === locale ? 'bold' : 'medium'}
-                    color={value === locale ? undefined : 'muted'}
+      <Popup position="bottom" alignment={dir === 'rtl' ? 'start' : 'end'}>
+        {(close: () => void) => {
+          return (
+            <div className={styles.menu}>
+              {items.map(({ value, label }) => {
+                return (
+                  <div
+                    key={value}
+                    className={classNames(styles.item, { [styles.selected]: value === locale })}
+                    onClick={(e: any) => handleSelect(value, close, e)}
                   >
-                    {label}
-                  </Text>
-                </Button>
-              );
-            })}
-          </Grid>
-        </Dialog>
-      </Popover>
-    </MenuTrigger>
+                    <span lang={value}>{label}</span>
+                    {value === locale && (
+                      <Icon className={styles.icon}>
+                        <Icons.Check />
+                      </Icon>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }}
+      </Popup>
+    </PopupTrigger>
   );
 }
+
+export default LanguageButton;

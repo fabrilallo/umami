@@ -1,9 +1,7 @@
+import prisma from '@/lib/prisma';
 import clickhouse from '@/lib/clickhouse';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
-import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getEventDataStats';
+import { QueryFilters } from '@/lib/types';
 
 export async function getEventDataStats(
   ...args: [websiteId: string, filters: QueryFilters]
@@ -20,10 +18,7 @@ export async function getEventDataStats(
 
 async function relationalQuery(websiteId: string, filters: QueryFilters) {
   const { rawQuery, parseFilters } = prisma;
-  const { filterQuery, joinSessionQuery, cohortQuery, queryParams } = parseFilters({
-    ...filters,
-    websiteId,
-  });
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -38,18 +33,16 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
         count(*) as "total"
       from event_data
       join website_event on website_event.event_id = event_data.website_event_id
-        and website_event.website_id = {{websiteId::uuid}}
-        and website_event.created_at between {{startDate}} and {{endDate}}
-      ${cohortQuery}
-      ${joinSessionQuery}
+      and website_event.website_id = {{websiteId::uuid}}
+      and website_event.created_at between {{startDate}} and {{endDate}}
+    ${cohortQuery}
       where event_data.website_id = {{websiteId::uuid}}
         and event_data.created_at between {{startDate}} and {{endDate}}
       ${filterQuery}
       group by website_event_id, data_key
       ) as t
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
@@ -58,7 +51,7 @@ async function clickhouseQuery(
   filters: QueryFilters,
 ): Promise<{ events: number; properties: number; records: number }[]> {
   const { rawQuery, parseFilters } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({ ...filters, websiteId });
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -71,20 +64,14 @@ async function clickhouseQuery(
         event_id,
         data_key,
         count(*) as "total"
-      from event_data
-      join website_event
-      on website_event.event_id = event_data.event_id
-        and website_event.website_id = event_data.website_id
-        and website_event.website_id = {websiteId:UUID}
-        and website_event.created_at between {startDate:DateTime64} and {endDate:DateTime64}
+      from event_data website_event
       ${cohortQuery}
-      where event_data.website_id = {websiteId:UUID}
-        and event_data.created_at between {startDate:DateTime64} and {endDate:DateTime64}
+      where website_id = {websiteId:UUID}
+        and created_at between {startDate:DateTime64} and {endDate:DateTime64}
       ${filterQuery}
       group by event_id, data_key
       ) as t
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }

@@ -1,17 +1,19 @@
 import { z } from 'zod';
+import { parseRequest, getRequestDateRange, getRequestFilters } from '@/lib/request';
+import { unauthorized, json } from '@/lib/response';
+import { canViewWebsite } from '@/lib/auth';
 import { getCompareDate } from '@/lib/date';
-import { getQueryFilters, parseRequest } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { dateRangeParams, filterParams } from '@/lib/schema';
-import { canViewWebsite } from '@/permissions';
-import { getWebsiteStats } from '@/queries/sql';
+import { filterParams } from '@/lib/schema';
+import { getWebsiteStats } from '@/queries';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ websiteId: string }> },
 ) {
   const schema = z.object({
-    ...dateRangeParams,
+    startAt: z.coerce.number().int(),
+    endAt: z.coerce.number().int(),
+    compare: z.string().optional(),
     ...filterParams,
   });
 
@@ -22,22 +24,40 @@ export async function GET(
   }
 
   const { websiteId } = await params;
+  const { compare } = query;
 
   if (!(await canViewWebsite(auth, websiteId))) {
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(query, websiteId);
+  const { startDate, endDate } = await getRequestDateRange(query);
+  const { startDate: compareStartDate, endDate: compareEndDate } = getCompareDate(
+    compare,
+    startDate,
+    endDate,
+  );
 
-  const data = await getWebsiteStats(websiteId, filters);
+  const filters = await getRequestFilters(query);
 
-  const { startDate, endDate } = getCompareDate('prev', filters.startDate, filters.endDate);
-
-  const comparison = await getWebsiteStats(websiteId, {
+  const metrics = await getWebsiteStats(websiteId, {
     ...filters,
     startDate,
     endDate,
   });
 
-  return json({ ...data, comparison });
+  const prevPeriod = await getWebsiteStats(websiteId, {
+    ...filters,
+    startDate: compareStartDate,
+    endDate: compareEndDate,
+  });
+
+  const stats = Object.keys(metrics[0]).reduce((obj, key) => {
+    obj[key] = {
+      value: Number(metrics[0][key]) || 0,
+      prev: Number(prevPeriod[0][key]) || 0,
+    };
+    return obj;
+  }, {});
+
+  return json(stats);
 }

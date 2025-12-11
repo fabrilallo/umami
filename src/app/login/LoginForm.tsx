@@ -1,70 +1,77 @@
 import {
-  Column,
   Form,
+  FormRow,
+  FormInput,
   FormButtons,
-  FormField,
-  FormSubmitButton,
-  Heading,
-  Icon,
-  PasswordField,
   TextField,
-} from '@umami/react-zen';
+  PasswordField,
+  SubmitButton,
+  Icon,
+} from 'react-basics';
 import { useRouter } from 'next/navigation';
-import { useMessages, useUpdateQuery } from '@/components/hooks';
-import { Logo } from '@/components/svg';
-import { setClientAuthToken } from '@/lib/client';
+import { useApi, useMessages } from '@/components/hooks';
 import { setUser } from '@/store/app';
+import { setClientAuthToken } from '@/lib/client';
+import Logo from '@/assets/logo.svg';
+import styles from './LoginForm.module.css';
 
 export function LoginForm() {
-  const { formatMessage, labels, getErrorMessage } = useMessages();
+  const { formatMessage, labels, getMessage } = useMessages();
   const router = useRouter();
-  const { mutateAsync, error } = useUpdateQuery('/auth/login');
+  const { post, useMutation } = useApi();
+  const { mutate, error, isPending } = useMutation({
+    mutationFn: (data: any) => post('/auth/login', data),
+  });
 
   const handleSubmit = async (data: any) => {
-    await mutateAsync(data, {
+    mutate(data, {
       onSuccess: async ({ token, user }) => {
         setClientAuthToken(token);
         setUser(user);
-        router.push('/');
+
+        router.push('/dashboard');
       },
     });
   };
 
   return (
-    <Column justifyContent="center" alignItems="center" gap="6">
-      <Icon size="lg">
+    <div className={styles.login}>
+      <Icon className={styles.icon} size="xl">
         <Logo />
       </Icon>
-      <Heading>umami</Heading>
-      <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
-        <FormField
-          label={formatMessage(labels.username)}
-          data-test="input-username"
-          name="username"
-          rules={{ required: formatMessage(labels.required) }}
-        >
-          <TextField autoComplete="username" />
-        </FormField>
-
-        <FormField
-          label={formatMessage(labels.password)}
-          data-test="input-password"
-          name="password"
-          rules={{ required: formatMessage(labels.required) }}
-        >
-          <PasswordField autoComplete="current-password" />
-        </FormField>
+      <div className={styles.title}>umami</div>
+      <Form className={styles.form} onSubmit={handleSubmit} error={getMessage(error)}>
+        <FormRow label={formatMessage(labels.username)}>
+          <FormInput
+            data-test="input-username"
+            name="username"
+            rules={{ required: formatMessage(labels.required) }}
+          >
+            <TextField autoComplete="off" />
+          </FormInput>
+        </FormRow>
+        <FormRow label={formatMessage(labels.password)}>
+          <FormInput
+            data-test="input-password"
+            name="password"
+            rules={{ required: formatMessage(labels.required) }}
+          >
+            <PasswordField />
+          </FormInput>
+        </FormRow>
         <FormButtons>
-          <FormSubmitButton
+          <SubmitButton
             data-test="button-submit"
+            className={styles.button}
             variant="primary"
-            style={{ flex: 1 }}
-            isDisabled={false}
+            disabled={isPending}
           >
             {formatMessage(labels.login)}
-          </FormSubmitButton>
+          </SubmitButton>
         </FormButtons>
       </Form>
-    </Column>
+    </div>
   );
 }
+
+export default LoginForm;

@@ -1,10 +1,8 @@
 import clickhouse from '@/lib/clickhouse';
-import { EVENT_COLUMNS } from '@/lib/constants';
+import { EVENT_COLUMNS, EVENT_TYPE } from '@/lib/constants';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getSessionStats';
+import { QueryFilters } from '@/lib/types';
 
 export async function getSessionStats(...args: [websiteId: string, filters: QueryFilters]) {
   return runQuery({
@@ -16,9 +14,9 @@ export async function getSessionStats(...args: [websiteId: string, filters: Quer
 async function relationalQuery(websiteId: string, filters: QueryFilters) {
   const { timezone = 'utc', unit = 'day' } = filters;
   const { getDateSQL, parseFilters, rawQuery } = prisma;
-  const { filterQuery, joinSessionQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, joinSession, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
+    eventType: EVENT_TYPE.pageView,
   });
 
   return rawQuery(
@@ -27,17 +25,16 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
       ${getDateSQL('website_event.created_at', unit, timezone)} x,
       count(distinct website_event.session_id) y
     from website_event
-    ${cohortQuery}
-    ${joinSessionQuery}
+      ${cohortQuery}
+      ${joinSession}
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
-      and website_event.event_type != 2
+      and event_type = {{eventType}}
       ${filterQuery}
     group by 1
     order by 1
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
@@ -45,11 +42,11 @@ async function clickhouseQuery(
   websiteId: string,
   filters: QueryFilters,
 ): Promise<{ x: string; y: number }[]> {
-  const { timezone = 'UTC', unit = 'day' } = filters;
+  const { timezone = 'utc', unit = 'day' } = filters;
   const { parseFilters, rawQuery, getDateSQL } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
+    eventType: EVENT_TYPE.pageView,
   });
 
   let sql = '';
@@ -67,7 +64,7 @@ async function clickhouseQuery(
       ${cohortQuery}
       where website_id = {websiteId:UUID}
         and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-        and event_type != 2
+        and event_type = {eventType:UInt32}
         ${filterQuery}
       group by t
     ) as g
@@ -82,11 +79,11 @@ async function clickhouseQuery(
       select
         ${getDateSQL('website_event.created_at', unit, timezone)} as t,
         uniq(session_id) as y
-      from website_event_stats_hourly as website_event
+      from website_event_stats_hourly website_event
       ${cohortQuery}
       where website_id = {websiteId:UUID}
         and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-        and event_type != 2
+        and event_type = {eventType:UInt32}
         ${filterQuery}
       group by t
     ) as g
@@ -94,5 +91,5 @@ async function clickhouseQuery(
     `;
   }
 
-  return rawQuery(sql, queryParams, FUNCTION_NAME);
+  return rawQuery(sql, params);
 }

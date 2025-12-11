@@ -11,3 +11,5 @@ export function useDocumentClick(handler: (event: MouseEvent) => any) {
 
   return null;
 }
+
+export default useDocumentClick;

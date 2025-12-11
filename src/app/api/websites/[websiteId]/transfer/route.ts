@@ -1,16 +1,16 @@
 import { z } from 'zod';
+import { canTransferWebsiteToTeam, canTransferWebsiteToUser } from '@/lib/auth';
+import { updateWebsite } from '@/queries';
 import { parseRequest } from '@/lib/request';
-import { badRequest, json, unauthorized } from '@/lib/response';
-import { canTransferWebsiteToTeam, canTransferWebsiteToUser } from '@/permissions';
-import { updateWebsite } from '@/queries/prisma';
+import { badRequest, unauthorized, json } from '@/lib/response';
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ websiteId: string }> },
 ) {
   const schema = z.object({
-    userId: z.uuid().optional(),
-    teamId: z.uuid().optional(),
+    userId: z.string().uuid().optional(),
+    teamId: z.string().uuid().optional(),
   });
 
   const { auth, body, error } = await parseRequest(request, schema);

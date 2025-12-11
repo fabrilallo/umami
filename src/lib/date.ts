@@ -1,45 +1,42 @@
 import {
-  addDays,
-  addHours,
   addMinutes,
+  addHours,
+  addDays,
   addMonths,
-  addWeeks,
   addYears,
-  differenceInCalendarDays,
-  differenceInCalendarMonths,
-  differenceInCalendarWeeks,
-  differenceInCalendarYears,
-  differenceInHours,
-  differenceInMinutes,
-  endOfDay,
+  subMinutes,
+  subHours,
+  subDays,
+  subMonths,
+  subYears,
+  startOfMinute,
+  startOfHour,
+  startOfDay,
+  startOfWeek,
+  startOfMonth,
+  startOfYear,
   endOfHour,
-  endOfMinute,
-  endOfMonth,
+  endOfDay,
   endOfWeek,
+  endOfMonth,
   endOfYear,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInCalendarDays,
+  differenceInCalendarWeeks,
+  differenceInCalendarMonths,
+  differenceInCalendarYears,
   format,
-  isBefore,
-  isDate,
-  isEqual,
-  isSameDay,
   max,
   min,
-  startOfDay,
-  startOfHour,
-  startOfMinute,
-  startOfMonth,
-  startOfWeek,
-  startOfYear,
-  subDays,
-  subHours,
-  subMinutes,
-  subMonths,
+  isDate,
+  addWeeks,
   subWeeks,
-  subYears,
+  endOfMinute,
+  isSameDay,
 } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 import { getDateLocale } from '@/lib/lang';
-import type { DateRange } from '@/lib/types';
+import { DateRange } from '@/lib/types';
 
 export const TIME_UNIT = {
   minute: 'minute',
@@ -50,7 +47,19 @@ export const TIME_UNIT = {
   year: 'year',
 };
 
-export const DATE_FUNCTIONS = {
+export const CUSTOM_FORMATS = {
+  'en-US': {
+    p: 'ha',
+    pp: 'h:mm:ss',
+  },
+  'fr-FR': {
+    'M/d': 'd/M',
+    'MMM d': 'd MMM',
+    'EEE M/d': 'EEE d/M',
+  },
+};
+
+const DATE_FUNCTIONS = {
   minute: {
     diff: differenceInMinutes,
     add: addMinutes,
@@ -95,29 +104,11 @@ export const DATE_FUNCTIONS = {
   },
 };
 
-export const DATE_FORMATS = {
-  minute: 'yyyy-MM-dd HH:mm',
-  hour: 'yyyy-MM-dd HH',
-  day: 'yyyy-MM-dd',
-  week: "yyyy-'W'II",
-  month: 'yyyy-MM',
-  year: 'yyyy',
-};
-
-const TIMEZONE_MAPPINGS: Record<string, string> = {
-  'Asia/Calcutta': 'Asia/Kolkata',
-};
-
-export function normalizeTimezone(timezone: string): string {
-  return TIMEZONE_MAPPINGS[timezone] || timezone;
-}
-
 export function isValidTimezone(timezone: string) {
   try {
-    const normalizedTimezone = normalizeTimezone(timezone);
-    Intl.DateTimeFormat(undefined, { timeZone: normalizedTimezone });
+    Intl.DateTimeFormat(undefined, { timeZone: timezone });
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 }
@@ -136,36 +127,43 @@ export function parseDateValue(value: string) {
   return { num: +num, unit };
 }
 
-export function parseDateRange(value: string, locale = 'en-US', timezone?: string): DateRange {
-  if (typeof value !== 'string') {
-    return null;
+export function parseDateRange(value: string | object, locale = 'en-US'): DateRange {
+  if (typeof value === 'object') {
+    return value as DateRange;
   }
 
-  if (value.startsWith('range')) {
+  if (value === 'all') {
+    return {
+      startDate: new Date(0),
+      endDate: new Date(1),
+      value,
+    };
+  }
+
+  if (value?.startsWith?.('range')) {
     const [, startTime, endTime] = value.split(':');
 
     const startDate = new Date(+startTime);
     const endDate = new Date(+endTime);
-    const unit = getMinimumUnit(startDate, endDate);
 
     return {
       startDate,
       endDate,
       value,
       ...parseDateValue(value),
-      unit,
+      offset: 0,
+      unit: getMinimumUnit(startDate, endDate),
     };
   }
 
-  const date = new Date();
-  const now = timezone ? utcToZonedTime(date, timezone) : date;
+  const now = new Date();
   const dateLocale = getDateLocale(locale);
-  const { num = 1, unit } = parseDateValue(value);
+  const { num, unit } = parseDateValue(value);
 
   switch (unit) {
     case 'hour':
       return {
-        startDate: num ? subHours(startOfHour(now), num) : startOfHour(now),
+        startDate: num ? subHours(startOfHour(now), num - 1) : startOfHour(now),
         endDate: endOfHour(now),
         offset: 0,
         num: num || 1,
@@ -174,7 +172,7 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
       };
     case 'day':
       return {
-        startDate: num ? subDays(startOfDay(now), num) : startOfDay(now),
+        startDate: num ? subDays(startOfDay(now), num - 1) : startOfDay(now),
         endDate: endOfDay(now),
         unit: num ? 'day' : 'hour',
         offset: 0,
@@ -184,7 +182,7 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
     case 'week':
       return {
         startDate: num
-          ? subWeeks(startOfWeek(now, { locale: dateLocale }), num)
+          ? subWeeks(startOfWeek(now, { locale: dateLocale }), num - 1)
           : startOfWeek(now, { locale: dateLocale }),
         endDate: endOfWeek(now, { locale: dateLocale }),
         unit: 'day',
@@ -194,7 +192,7 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
       };
     case 'month':
       return {
-        startDate: num ? subMonths(startOfMonth(now), num) : startOfMonth(now),
+        startDate: num ? subMonths(startOfMonth(now), num - 1) : startOfMonth(now),
         endDate: endOfMonth(now),
         unit: num ? 'month' : 'day',
         offset: 0,
@@ -203,7 +201,7 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
       };
     case 'year':
       return {
-        startDate: num ? subYears(startOfYear(now), num) : startOfYear(now),
+        startDate: num ? subYears(startOfYear(now), num - 1) : startOfYear(now),
         endDate: endOfYear(now),
         unit: 'month',
         offset: 0,
@@ -213,14 +211,10 @@ export function parseDateRange(value: string, locale = 'en-US', timezone?: strin
   }
 }
 
-export function getOffsetDateRange(dateRange: DateRange, offset: number) {
-  if (offset === 0) {
-    return dateRange;
-  }
+export function getOffsetDateRange(dateRange: DateRange, increment: number) {
+  const { startDate, endDate, unit, num, offset, value } = dateRange;
 
-  const { startDate, endDate, unit, num, value } = dateRange;
-
-  const change = num * offset;
+  const change = num * increment;
   const { add } = DATE_FUNCTIONS[unit];
   const { unit: originalUnit } = parseDateValue(value) || {};
 
@@ -228,39 +222,39 @@ export function getOffsetDateRange(dateRange: DateRange, offset: number) {
     case 'day':
       return {
         ...dateRange,
-        offset,
         startDate: addDays(startDate, change),
         endDate: addDays(endDate, change),
+        offset: offset + increment,
       };
     case 'week':
       return {
         ...dateRange,
-        offset,
         startDate: addWeeks(startDate, change),
         endDate: addWeeks(endDate, change),
+        offset: offset + increment,
       };
     case 'month':
       return {
         ...dateRange,
-        offset,
         startDate: addMonths(startDate, change),
         endDate: addMonths(endDate, change),
+        offset: offset + increment,
       };
     case 'year':
       return {
         ...dateRange,
-        offset,
         startDate: addYears(startDate, change),
         endDate: addYears(endDate, change),
+        offset: offset + increment,
       };
     default:
       return {
         startDate: add(startDate, change),
         endDate: add(endDate, change),
-        offset,
         value,
         unit,
         num,
+        offset: offset + increment,
       };
   }
 }
@@ -287,6 +281,31 @@ export function getMinimumUnit(startDate: number | Date, endDate: number | Date)
   return 'year';
 }
 
+export function getDateArray(data: any[], startDate: Date, endDate: Date, unit: string) {
+  const arr = [];
+  const { diff, add, start } = DATE_FUNCTIONS[unit];
+  const n = diff(endDate, startDate);
+
+  for (let i = 0; i <= n; i++) {
+    const t = start(add(startDate, i));
+    const y = data.find(({ x }) => start(new Date(x)).getTime() === t.getTime())?.y || 0;
+
+    arr.push({ x: t, y });
+  }
+
+  return arr;
+}
+
+export function formatDate(date: string | number | Date, str: string, locale = 'en-US') {
+  return format(
+    typeof date === 'string' ? new Date(date) : date,
+    CUSTOM_FORMATS?.[locale]?.[str] || str,
+    {
+      locale: getDateLocale(locale),
+    },
+  );
+}
+
 export function maxDate(...args: Date[]) {
   return max(args.filter(n => isDate(n)));
 }
@@ -295,18 +314,23 @@ export function minDate(...args: any[]) {
   return min(args.filter(n => isDate(n)));
 }
 
+export function getLocalTime(t: string | number | Date) {
+  return addMinutes(new Date(t), new Date().getTimezoneOffset());
+}
+
+export function getDateLength(startDate: Date, endDate: Date, unit: string | number) {
+  const { diff } = DATE_FUNCTIONS[unit];
+  return diff(endDate, startDate) + 1;
+}
+
 export function getCompareDate(compare: string, startDate: Date, endDate: Date) {
   if (compare === 'yoy') {
-    return { compare, startDate: subYears(startDate, 1), endDate: subYears(endDate, 1) };
+    return { startDate: subYears(startDate, 1), endDate: subYears(endDate, 1) };
   }
 
-  if (compare === 'prev') {
-    const diff = differenceInMinutes(endDate, startDate);
+  const diff = differenceInMinutes(endDate, startDate);
 
-    return { compare, startDate: subMinutes(startDate, diff), endDate: subMinutes(endDate, diff) };
-  }
-
-  return {};
+  return { startDate: subMinutes(startDate, diff), endDate: subMinutes(endDate, diff) };
 }
 
 export function getDayOfWeekAsDate(dayOfWeek: number) {
@@ -320,56 +344,4 @@ export function getDayOfWeekAsDate(dayOfWeek: number) {
   }
 
   return currentDate;
-}
-
-export function formatDate(
-  date: string | number | Date,
-  dateFormat: string = 'PPpp',
-  locale = 'en-US',
-) {
-  return format(typeof date === 'string' ? new Date(date) : date, dateFormat, {
-    locale: getDateLocale(locale),
-  });
-}
-
-export function generateTimeSeries(
-  data: { x: string; y: number; d?: string }[],
-  minDate: Date,
-  maxDate: Date,
-  unit: string,
-  locale: string,
-) {
-  const add = DATE_FUNCTIONS[unit].add;
-  const start = DATE_FUNCTIONS[unit].start;
-  const fmt = DATE_FORMATS[unit];
-
-  let current = start(minDate);
-  const end = start(maxDate);
-
-  const timeseries: string[] = [];
-
-  while (isBefore(current, end) || isEqual(current, end)) {
-    timeseries.push(formatDate(current, fmt, locale));
-    current = add(current, 1);
-  }
-
-  const lookup = new Map(data.map(({ x, y, d }) => [formatDate(x, fmt, locale), { x, y, d }]));
-
-  return timeseries.map(t => {
-    const { x, y, d } = lookup.get(t) || {};
-
-    return { x: t, d: d ?? x, y: y ?? null };
-  });
-}
-
-export function getDateRangeValue(startDate: Date, endDate: Date) {
-  return `range:${startDate.getTime()}:${endDate.getTime()}`;
-}
-
-export function getMonthDateRangeValue(date: Date) {
-  return getDateRangeValue(startOfMonth(date), endOfMonth(date));
-}
-
-export function isInvalidDate(date: any) {
-  return date instanceof Date && Number.isNaN(date.getTime());
 }

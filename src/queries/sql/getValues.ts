@@ -1,12 +1,9 @@
-import clickhouse from '@/lib/clickhouse';
-import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getValues';
+import clickhouse from '@/lib/clickhouse';
+import { runQuery, CLICKHOUSE, PRISMA } from '@/lib/db';
 
 export async function getValues(
-  ...args: [websiteId: string, column: string, filters: QueryFilters]
+  ...args: [websiteId: string, column: string, startDate: Date, endDate: Date, search: string]
 ) {
   return runQuery({
     [PRISMA]: () => relationalQuery(...args),
@@ -14,11 +11,15 @@ export async function getValues(
   });
 }
 
-async function relationalQuery(websiteId: string, column: string, filters: QueryFilters) {
+async function relationalQuery(
+  websiteId: string,
+  column: string,
+  startDate: Date,
+  endDate: Date,
+  search: string,
+) {
   const { rawQuery, getSearchSQL } = prisma;
   const params = {};
-  const { startDate, endDate, search } = filters;
-
   let searchQuery = '';
   let excludeDomain = '';
 
@@ -51,7 +52,6 @@ async function relationalQuery(websiteId: string, column: string, filters: Query
     from website_event
     inner join session
       on session.session_id = website_event.session_id
-        and session.website_id = website_event.website_id
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
       ${searchQuery}
@@ -67,15 +67,18 @@ async function relationalQuery(websiteId: string, column: string, filters: Query
       search: `%${search}%`,
       ...params,
     },
-    FUNCTION_NAME,
   );
 }
 
-async function clickhouseQuery(websiteId: string, column: string, filters: QueryFilters) {
+async function clickhouseQuery(
+  websiteId: string,
+  column: string,
+  startDate: Date,
+  endDate: Date,
+  search: string,
+) {
   const { rawQuery, getSearchSQL } = clickhouse;
   const params = {};
-  const { startDate, endDate, search } = filters;
-
   let searchQuery = '';
   let excludeDomain = '';
 
@@ -124,6 +127,5 @@ async function clickhouseQuery(websiteId: string, column: string, filters: Query
       search,
       ...params,
     },
-    FUNCTION_NAME,
   );
 }

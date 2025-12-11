@@ -19,4 +19,4 @@ export function saveDashboard(settings) {
   setItem(DASHBOARD_CONFIG, store.getState());
 }
 
-export const useDashboard = store;
+export default store;

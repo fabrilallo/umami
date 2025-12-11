@@ -1,12 +1,9 @@
-import { useTheme } from '@umami/react-zen';
-import { useCallback, useMemo } from 'react';
-import { BarChart, type BarChartProps } from '@/components/charts/BarChart';
-import { useLocale, useMessages } from '@/components/hooks';
+import { useMemo } from 'react';
+import BarChart, { BarChartProps } from '@/components/charts/BarChart';
+import { useLocale, useTheme, useMessages } from '@/components/hooks';
 import { renderDateLabels } from '@/lib/charts';
-import { getThemeColors } from '@/lib/colors';
-import { generateTimeSeries } from '@/lib/date';
 
-export interface PageviewsChartProps extends BarChartProps {
+export interface PagepageviewsChartProps extends BarChartProps {
   data: {
     pageviews: any[];
     sessions: any[];
@@ -16,36 +13,38 @@ export interface PageviewsChartProps extends BarChartProps {
     };
   };
   unit: string;
+  isLoading?: boolean;
+  isAllTime?: boolean;
 }
 
-export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: PageviewsChartProps) {
+export function PagepageviewsChart({
+  data,
+  unit,
+  isLoading,
+  isAllTime,
+  ...props
+}: PagepageviewsChartProps) {
   const { formatMessage, labels } = useMessages();
-  const { theme } = useTheme();
-  const { locale, dateLocale } = useLocale();
-  const { colors } = useMemo(() => getThemeColors(theme), [theme]);
+  const { colors } = useTheme();
+  const { locale } = useLocale();
 
-  const chartData: any = useMemo(() => {
-    if (!data) return;
+  const chartData = useMemo(() => {
+    if (!data) {
+      return {};
+    }
 
     return {
-      __id: Date.now(),
       datasets: [
         {
-          type: 'bar',
           label: formatMessage(labels.visitors),
-          data: generateTimeSeries(data.sessions, minDate, maxDate, unit, dateLocale),
+          data: data.sessions,
           borderWidth: 1,
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
           ...colors.chart.visitors,
           order: 3,
         },
         {
-          type: 'bar',
           label: formatMessage(labels.views),
-          data: generateTimeSeries(data.pageviews, minDate, maxDate, unit, dateLocale),
-          barPercentage: 0.9,
-          categoryPercentage: 0.9,
+          data: data.pageviews,
           borderWidth: 1,
           ...colors.chart.views,
           order: 4,
@@ -55,13 +54,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
               {
                 type: 'line',
                 label: `${formatMessage(labels.views)} (${formatMessage(labels.previous)})`,
-                data: generateTimeSeries(
-                  data.compare.pageviews,
-                  minDate,
-                  maxDate,
-                  unit,
-                  dateLocale,
-                ),
+                data: data.compare.pageviews,
                 borderWidth: 2,
                 backgroundColor: '#8601B0',
                 borderColor: '#8601B0',
@@ -70,7 +63,7 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
               {
                 type: 'line',
                 label: `${formatMessage(labels.visitors)} (${formatMessage(labels.previous)})`,
-                data: generateTimeSeries(data.compare.sessions, minDate, maxDate, unit, dateLocale),
+                data: data.compare.sessions,
                 borderWidth: 2,
                 backgroundColor: '#f15bb5',
                 borderColor: '#f15bb5',
@@ -82,17 +75,16 @@ export function PageviewsChart({ data, unit, minDate, maxDate, ...props }: Pagev
     };
   }, [data, locale]);
 
-  const renderXLabel = useCallback(renderDateLabels(unit, locale), [unit, locale]);
-
   return (
     <BarChart
       {...props}
-      chartData={chartData}
+      data={chartData}
       unit={unit}
-      minDate={minDate}
-      maxDate={maxDate}
-      renderXLabel={renderXLabel}
-      height="400px"
+      isLoading={isLoading}
+      isAllTime={isAllTime}
+      renderXLabel={renderDateLabels(unit, locale)}
     />
   );
 }
+
+export default PagepageviewsChart;

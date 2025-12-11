@@ -1,26 +1,37 @@
-import { getQueryFilters, parseRequest, setWebsiteDate } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { reportResultSchema } from '@/lib/schema';
-import { canViewWebsite } from '@/permissions';
-import { getRetention, type RetentionParameters } from '@/queries/sql';
+import { z } from 'zod';
+import { canViewWebsite } from '@/lib/auth';
+import { unauthorized, json } from '@/lib/response';
+import { parseRequest } from '@/lib/request';
+import { getRetention } from '@/queries';
+import { reportParms, timezoneParam } from '@/lib/schema';
 
 export async function POST(request: Request) {
-  const { auth, body, error } = await parseRequest(request, reportResultSchema);
+  const schema = z.object({
+    ...reportParms,
+    timezone: timezoneParam,
+  });
+
+  const { auth, body, error } = await parseRequest(request, schema);
 
   if (error) {
     return error();
   }
 
-  const { websiteId } = body;
+  const {
+    websiteId,
+    dateRange: { startDate, endDate },
+    timezone,
+  } = body;
 
   if (!(await canViewWebsite(auth, websiteId))) {
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(body.filters, websiteId);
-  const parameters = await setWebsiteDate(websiteId, body.parameters);
-
-  const data = await getRetention(websiteId, parameters as RetentionParameters, filters);
+  const data = await getRetention(websiteId, {
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
+    timezone,
+  });
 
   return json(data);
 }

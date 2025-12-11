@@ -1,19 +1,17 @@
 import clickhouse from '@/lib/clickhouse';
-import { EVENT_COLUMNS, FILTER_COLUMNS, SESSION_COLUMNS } from '@/lib/constants';
+import { EVENT_COLUMNS, EVENT_TYPE, FILTER_COLUMNS, SESSION_COLUMNS } from '@/lib/constants';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getSessionMetrics';
-
-export interface SessionMetricsParameters {
-  type: string;
-  limit?: number | string;
-  offset?: number | string;
-}
+import { QueryFilters } from '@/lib/types';
 
 export async function getSessionMetrics(
-  ...args: [websiteId: string, parameters: SessionMetricsParameters, filters: QueryFilters]
+  ...args: [
+    websiteId: string,
+    type: string,
+    filters: QueryFilters,
+    limit?: number | string,
+    offset?: number | string,
+  ]
 ) {
   return runQuery({
     [PRISMA]: () => relationalQuery(...args),
@@ -23,26 +21,24 @@ export async function getSessionMetrics(
 
 async function relationalQuery(
   websiteId: string,
-  parameters: SessionMetricsParameters,
+  type: string,
   filters: QueryFilters,
+  limit: number | string = 500,
+  offset: number | string = 0,
 ) {
-  const { type, limit = 500, offset = 0 } = parameters;
-  let column = FILTER_COLUMNS[type] || type;
+  const column = FILTER_COLUMNS[type] || type;
   const { parseFilters, rawQuery } = prisma;
-  const { filterQuery, joinSessionQuery, cohortQuery, queryParams } = parseFilters(
+  const { filterQuery, cohortQuery, joinSession, params } = await parseFilters(
+    websiteId,
     {
       ...filters,
-      websiteId,
+      eventType: EVENT_TYPE.pageView,
     },
     {
       joinSession: SESSION_COLUMNS.includes(type),
     },
   );
   const includeCountry = column === 'city' || column === 'region';
-
-  if (type === 'language') {
-    column = `lower(left(${type}, 2))`;
-  }
 
   return rawQuery(
     `
@@ -52,10 +48,10 @@ async function relationalQuery(
       ${includeCountry ? ', country' : ''}
     from website_event
     ${cohortQuery}
-    ${joinSessionQuery}
+    ${joinSession}
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
-      and website_event.event_type != 2
+      and website_event.event_type = {{eventType}}
     ${filterQuery}
     group by 1 
     ${includeCountry ? ', 3' : ''}
@@ -63,28 +59,24 @@ async function relationalQuery(
     limit ${limit}
     offset ${offset}
     `,
-    { ...queryParams, ...parameters },
-    FUNCTION_NAME,
+    params,
   );
 }
 
 async function clickhouseQuery(
   websiteId: string,
-  parameters: SessionMetricsParameters,
+  type: string,
   filters: QueryFilters,
+  limit: number | string = 500,
+  offset: number | string = 0,
 ): Promise<{ x: string; y: number }[]> {
-  const { type, limit = 500, offset = 0 } = parameters;
-  let column = FILTER_COLUMNS[type] || type;
+  const column = FILTER_COLUMNS[type] || type;
   const { parseFilters, rawQuery } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
+    eventType: EVENT_TYPE.pageView,
   });
   const includeCountry = column === 'city' || column === 'region';
-
-  if (type === 'language') {
-    column = `lower(left(${type}, 2))`;
-  }
 
   let sql = '';
 
@@ -98,7 +90,7 @@ async function clickhouseQuery(
     ${cohortQuery}
     where website_id = {websiteId:UUID}
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-      and event_type != 2
+      and event_type = {eventType:UInt32}
       ${filterQuery}
     group by x 
     ${includeCountry ? ', country' : ''}
@@ -112,11 +104,11 @@ async function clickhouseQuery(
       ${column} x,
       uniq(session_id) y
       ${includeCountry ? ', country' : ''}
-    from website_event_stats_hourly as website_event
+    from website_event_stats_hourly website_event
     ${cohortQuery}
     where website_id = {websiteId:UUID}
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-      and event_type != 2
+      and event_type = {eventType:UInt32}
       ${filterQuery}
     group by x 
     ${includeCountry ? ', country' : ''}
@@ -126,5 +118,5 @@ async function clickhouseQuery(
     `;
   }
 
-  return rawQuery(sql, { ...queryParams, ...parameters }, FUNCTION_NAME);
+  return rawQuery(sql, params);
 }

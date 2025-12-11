@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { httpGet } from '@/lib/fetch';
 import enUS from '../../../public/intl/country/en-US.json';
 
@@ -30,3 +30,5 @@ export function useCountryNames(locale: string) {
 
   return { countryNames: list };
 }
+
+export default useCountryNames;

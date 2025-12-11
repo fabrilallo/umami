@@ -1,9 +1,7 @@
-import clickhouse from '@/lib/clickhouse';
-import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getRealtimeActivity';
+import clickhouse from '@/lib/clickhouse';
+import { runQuery, CLICKHOUSE, PRISMA } from '@/lib/db';
+import { QueryFilters } from '@/lib/types';
 
 export async function getRealtimeActivity(...args: [websiteId: string, filters: QueryFilters]) {
   return runQuery({
@@ -14,10 +12,7 @@ export async function getRealtimeActivity(...args: [websiteId: string, filters: 
 
 async function relationalQuery(websiteId: string, filters: QueryFilters) {
   const { rawQuery, parseFilters } = prisma;
-  const { queryParams, filterQuery, cohortQuery, dateQuery } = parseFilters({
-    ...filters,
-    websiteId,
-  });
+  const { params, filterQuery, cohortQuery, dateQuery } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -35,24 +30,19 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
     ${cohortQuery}
     inner join session
       on session.session_id = website_event.session_id
-        and session.website_id = website_event.website_id
     where website_event.website_id = {{websiteId::uuid}}
     ${filterQuery}
     ${dateQuery}
     order by website_event.created_at desc
     limit 100
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
 async function clickhouseQuery(websiteId: string, filters: QueryFilters): Promise<{ x: number }> {
   const { rawQuery, parseFilters } = clickhouse;
-  const { queryParams, filterQuery, cohortQuery, dateQuery } = parseFilters({
-    ...filters,
-    websiteId,
-  });
+  const { params, filterQuery, cohortQuery, dateQuery } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -74,7 +64,6 @@ async function clickhouseQuery(websiteId: string, filters: QueryFilters): Promis
         order by createdAt desc
         limit 100
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }

@@ -1,11 +1,11 @@
-import { Box, Button, Form, FormButtons, FormSubmitButton } from '@umami/react-zen';
-import type { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import { Button, LoadingButton, Form, FormButtons } from 'react-basics';
 import { useMessages } from '@/components/hooks';
 
 export interface ConfirmationFormProps {
   message: ReactNode;
   buttonLabel?: ReactNode;
-  buttonVariant?: 'primary' | 'quiet' | 'danger';
+  buttonVariant?: 'none' | 'primary' | 'secondary' | 'quiet' | 'danger';
   isLoading?: boolean;
   error?: string | Error;
   onConfirm?: () => void;
@@ -21,22 +21,24 @@ export function ConfirmationForm({
   onConfirm,
   onClose,
 }: ConfirmationFormProps) {
-  const { formatMessage, labels, getErrorMessage } = useMessages();
+  const { formatMessage, labels } = useMessages();
 
   return (
-    <Form onSubmit={onConfirm} error={getErrorMessage(error)}>
-      <Box marginY="4">{message}</Box>
-      <FormButtons>
-        <Button onPress={onClose}>{formatMessage(labels.cancel)}</Button>
-        <FormSubmitButton
+    <Form error={error}>
+      <p>{message}</p>
+      <FormButtons flex>
+        <LoadingButton
           data-test="button-confirm"
           isLoading={isLoading}
+          onClick={onConfirm}
           variant={buttonVariant}
-          isDisabled={false}
         >
           {buttonLabel || formatMessage(labels.ok)}
-        </FormSubmitButton>
+        </LoadingButton>
+        <Button onClick={onClose}>{formatMessage(labels.cancel)}</Button>
       </FormButtons>
     </Form>
   );
 }
+
+export default ConfirmationForm;

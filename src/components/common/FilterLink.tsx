@@ -1,49 +1,55 @@
-import { Icon, Row, Text } from '@umami/react-zen';
-import Link from 'next/link';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+import classNames from 'classnames';
 import { useMessages, useNavigation } from '@/components/hooks';
-import { ExternalLink } from '@/components/icons';
+import Link from 'next/link';
+import { ReactNode } from 'react';
+import { Icon, Icons } from 'react-basics';
+import styles from './FilterLink.module.css';
 
-export interface FilterLinkProps extends HTMLAttributes<HTMLDivElement> {
-  type: string;
+export interface FilterLinkProps {
+  id: string;
   value: string;
   label?: string;
-  icon?: ReactNode;
   externalUrl?: string;
+  className?: string;
+  children?: ReactNode;
 }
 
-export function FilterLink({ type, value, label, externalUrl, icon }: FilterLinkProps) {
-  const [showLink, setShowLink] = useState(false);
+export function FilterLink({
+  id,
+  value,
+  label,
+  externalUrl,
+  children,
+  className,
+}: FilterLinkProps) {
   const { formatMessage, labels } = useMessages();
-  const { updateParams, query } = useNavigation();
-  const active = query[type] !== undefined;
-  const selected = query[type] === value;
+  const { renderUrl, query } = useNavigation();
+  const active = query[id] !== undefined;
+  const selected = query[id] === value;
 
   return (
-    <Row
-      alignItems="center"
-      gap
-      fontWeight={active && selected ? 'bold' : undefined}
-      color={active && !selected ? 'muted' : undefined}
-      onMouseOver={() => setShowLink(true)}
-      onMouseOut={() => setShowLink(false)}
+    <div
+      className={classNames(styles.row, className, {
+        [styles.inactive]: active && !selected,
+        [styles.active]: active && selected,
+      })}
     >
-      {icon}
+      {children}
       {!value && `(${label || formatMessage(labels.unknown)})`}
       {value && (
-        <Text title={label || value} truncate>
-          <Link href={updateParams({ [type]: `eq.${value}` })} replace>
-            {label || value}
-          </Link>
-        </Text>
+        <Link href={renderUrl({ [id]: value })} className={styles.label} replace>
+          {label || value}
+        </Link>
       )}
-      {externalUrl && showLink && (
-        <a href={externalUrl} target="_blank" rel="noreferrer noopener">
-          <Icon color="muted">
-            <ExternalLink />
+      {externalUrl && (
+        <a className={styles.link} href={externalUrl} target="_blank" rel="noreferrer noopener">
+          <Icon className={styles.icon}>
+            <Icons.External />
           </Icon>
         </a>
       )}
-    </Row>
+    </div>
   );
 }
+
+export default FilterLink;

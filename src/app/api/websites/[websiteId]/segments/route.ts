@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { canUpdateWebsite, canViewWebsite } from '@/lib/auth';
 import { uuid } from '@/lib/crypto';
-import { getQueryFilters, parseRequest } from '@/lib/request';
+import { parseRequest } from '@/lib/request';
 import { json, unauthorized } from '@/lib/response';
-import { anyObjectParam, searchParams, segmentTypeParam } from '@/lib/schema';
-import { canUpdateWebsite, canViewWebsite } from '@/permissions';
-import { createSegment, getWebsiteSegments } from '@/queries/prisma';
+import { segmentTypeParam } from '@/lib/schema';
+import { createSegment, getWebsiteSegments } from '@/queries';
+import { z } from 'zod';
 
 export async function GET(
   request: Request,
@@ -12,7 +12,6 @@ export async function GET(
 ) {
   const schema = z.object({
     type: segmentTypeParam,
-    ...searchParams,
   });
 
   const { auth, query, error } = await parseRequest(request, schema);
@@ -28,9 +27,7 @@ export async function GET(
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(query);
-
-  const segments = await getWebsiteSegments(websiteId, type, filters);
+  const segments = await getWebsiteSegments(websiteId, type);
 
   return json(segments);
 }
@@ -42,7 +39,7 @@ export async function POST(
   const schema = z.object({
     type: segmentTypeParam,
     name: z.string().max(200),
-    parameters: anyObjectParam,
+    parameters: z.object({}).passthrough(),
   });
 
   const { auth, body, error } = await parseRequest(request, schema);

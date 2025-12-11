@@ -1,84 +1,32 @@
-import {
-  Button,
-  Icon,
-  Menu,
-  MenuItem,
-  MenuSection,
-  MenuSeparator,
-  MenuTrigger,
-  Popover,
-} from '@umami/react-zen';
-import type { Key } from 'react';
-import { useConfig, useLoginQuery, useMessages, useNavigation } from '@/components/hooks';
-import {
-  BookText,
-  ExternalLink,
-  LifeBuoy,
-  LockKeyhole,
-  LogOut,
-  Settings,
-  UserCircle,
-} from '@/components/icons';
-import { DOCS_URL } from '@/lib/constants';
+import { Button, Icon, PopupTrigger, Popup, Form, FormRow } from 'react-basics';
+import TimezoneSetting from '@/app/(main)/profile/TimezoneSetting';
+import DateRangeSetting from '@/app/(main)/profile/DateRangeSetting';
+import Icons from '@/components/icons';
+import { useMessages } from '@/components/hooks';
+import styles from './SettingsButton.module.css';
 
 export function SettingsButton() {
   const { formatMessage, labels } = useMessages();
-  const { user } = useLoginQuery();
-  const { router } = useNavigation();
-  const { cloudMode } = useConfig();
-
-  const handleAction = (id: Key) => {
-    const url = id.toString();
-
-    if (cloudMode) {
-      if (url === '/docs') {
-        window.open(DOCS_URL, '_blank');
-      } else {
-        window.location.href = url;
-      }
-    } else {
-      router.push(url);
-    }
-  };
 
   return (
-    <MenuTrigger>
-      <Button data-test="button-profile" variant="quiet" autoFocus={false}>
+    <PopupTrigger>
+      <Button variant="quiet">
         <Icon>
-          <UserCircle />
+          <Icons.Gear />
         </Icon>
       </Button>
-      <Popover placement="bottom end">
-        <Menu autoFocus="last" onAction={handleAction}>
-          <MenuSection title={user.username}>
-            <MenuSeparator />
-            <MenuItem id="/settings" icon={<Settings />} label={formatMessage(labels.settings)} />
-            {!cloudMode && user.isAdmin && (
-              <MenuItem id="/admin" icon={<LockKeyhole />} label={formatMessage(labels.admin)} />
-            )}
-            {cloudMode && (
-              <>
-                <MenuItem
-                  id="/docs"
-                  icon={<BookText />}
-                  label={formatMessage(labels.documentation)}
-                >
-                  <Icon color="muted">
-                    <ExternalLink />
-                  </Icon>
-                </MenuItem>
-                <MenuItem
-                  id="/settings/support"
-                  icon={<LifeBuoy />}
-                  label={formatMessage(labels.support)}
-                />
-              </>
-            )}
-            <MenuSeparator />
-            <MenuItem id="/logout" icon={<LogOut />} label={formatMessage(labels.logout)} />
-          </MenuSection>
-        </Menu>
-      </Popover>
-    </MenuTrigger>
+      <Popup className={styles.popup} position="bottom" alignment="end">
+        <Form>
+          <FormRow label={formatMessage(labels.timezone)}>
+            <TimezoneSetting />
+          </FormRow>
+          <FormRow label={formatMessage(labels.defaultDateRange)}>
+            <DateRangeSetting />
+          </FormRow>
+        </Form>
+      </Popup>
+    </PopupTrigger>
   );
 }
+
+export default SettingsButton;

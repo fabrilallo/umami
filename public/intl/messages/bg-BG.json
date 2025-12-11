@@ -23,12 +23,6 @@
       "value": "Добави"
     }
   ],
-  "label.add-board": [
-    {
-      "type": 0,
-      "value": "Добави дъска"
-    }
-  ],
   "label.add-description": [
     {
       "type": 0,
@@ -59,12 +53,6 @@
       "value": "Администратор"
     }
   ],
-  "label.affiliate": [
-    {
-      "type": 0,
-      "value": "Партньор"
-    }
-  ],
   "label.after": [
     {
       "type": 0,
@@ -89,24 +77,6 @@
       "value": "Анализи"
     }
   ],
-  "label.apply": [
-    {
-      "type": 0,
-      "value": "Приложи"
-    }
-  ],
-  "label.attribution": [
-    {
-      "type": 0,
-      "value": "Атрибуция"
-    }
-  ],
-  "label.attribution-description": [
-    {
-      "type": 0,
-      "value": "Вижте как потребителите взаимодействат с вашия маркетинг и какво води до конверсии."
-    }
-  ],
   "label.average": [
     {
       "type": 0,
@@ -123,12 +93,6 @@
     {
       "type": 0,
       "value": "Преди"
-    }
-  ],
-  "label.boards": [
-    {
-      "type": 0,
-      "value": "Дъски"
     }
   ],
   "label.bounce-rate": [
@@ -155,12 +119,6 @@
       "value": "Браузъри"
     }
   ],
-  "label.campaigns": [
-    {
-      "type": 0,
-      "value": "Кампании"
-    }
-  ],
   "label.cancel": [
     {
       "type": 0,
@@ -171,12 +129,6 @@
     {
       "type": 0,
       "value": "Смени парола"
-    }
-  ],
-  "label.channels": [
-    {
-      "type": 0,
-      "value": "Канали"
     }
   ],
   "label.cities": [
@@ -197,22 +149,10 @@
       "value": "Изчисти всички"
     }
   ],
-  "label.cohort": [
-    {
-      "type": 0,
-      "value": "Кохорта"
-    }
-  ],
   "label.compare": [
     {
       "type": 0,
-      "value": "Сравни"
-    }
-  ],
-  "label.compare-dates": [
-    {
-      "type": 0,
-      "value": "Сравни дати"
+      "value": "Compare"
     }
   ],
   "label.confirm": [
@@ -233,40 +173,16 @@
       "value": "Съдържа"
     }
   ],
-  "label.content": [
-    {
-      "type": 0,
-      "value": "Съдържание"
-    }
-  ],
   "label.continue": [
     {
       "type": 0,
       "value": "Продължи"
     }
   ],
-  "label.conversion": [
-    {
-      "type": 0,
-      "value": "Конверсия"
-    }
-  ],
-  "label.conversion-rate": [
-    {
-      "type": 0,
-      "value": "Процент на конверсия"
-    }
-  ],
-  "label.conversion-step": [
-    {
-      "type": 0,
-      "value": "Стъпка на конверсия"
-    }
-  ],
   "label.count": [
     {
       "type": 0,
-      "value": "Брой"
+      "value": "Count"
     }
   ],
   "label.countries": [
@@ -317,16 +233,10 @@
       "value": "Създадено от"
     }
   ],
-  "label.currency": [
-    {
-      "type": 0,
-      "value": "Валута"
-    }
-  ],
   "label.current": [
     {
       "type": 0,
-      "value": "Текущ"
+      "value": "Current"
     }
   ],
   "label.current-password": [
@@ -437,40 +347,16 @@
       "value": "Устройства"
     }
   ],
-  "label.direct": [
-    {
-      "type": 0,
-      "value": "Директно"
-    }
-  ],
   "label.dismiss": [
     {
       "type": 0,
       "value": "Отхвърли"
     }
   ],
-  "label.distinct-id": [
-    {
-      "type": 0,
-      "value": "Уникален ID"
-    }
-  ],
   "label.does-not-contain": [
     {
       "type": 0,
       "value": "Не съдържа"
-    }
-  ],
-  "label.does-not-include": [
-    {
-      "type": 0,
-      "value": "Не включва"
-    }
-  ],
-  "label.doest-not-exist": [
-    {
-      "type": 0,
-      "value": "Не съществува"
     }
   ],
   "label.domain": [
@@ -503,12 +389,6 @@
       "value": "Редактирай член"
     }
   ],
-  "label.email": [
-    {
-      "type": 0,
-      "value": "Имейл"
-    }
-  ],
   "label.enable-share-url": [
     {
       "type": 0,
@@ -518,13 +398,13 @@
   "label.end-step": [
     {
       "type": 0,
-      "value": "Крайна стъпка"
+      "value": "End Step"
     }
   ],
   "label.entry": [
     {
       "type": 0,
-      "value": "URL на вход"
+      "value": "Entry URL"
     }
   ],
   "label.event": [
@@ -539,22 +419,10 @@
       "value": "Данни за събитие"
     }
   ],
-  "label.event-name": [
-    {
-      "type": 0,
-      "value": "Име на събитие"
-    }
-  ],
   "label.events": [
     {
       "type": 0,
       "value": "Събития"
-    }
-  ],
-  "label.exists": [
-    {
-      "type": 0,
-      "value": "Съществува"
     }
   ],
   "label.exit": [
@@ -605,16 +473,10 @@
       "value": "Филтри"
     }
   ],
-  "label.first-click": [
-    {
-      "type": 0,
-      "value": "Първо кликване"
-    }
-  ],
   "label.first-seen": [
     {
       "type": 0,
-      "value": "Първо видяно"
+      "value": "First seen"
     }
   ],
   "label.funnel": [
@@ -629,28 +491,22 @@
       "value": "Разберете процента на конверсия и отпадане на потребителите."
     }
   ],
-  "label.funnels": [
-    {
-      "type": 0,
-      "value": "Фунии"
-    }
-  ],
   "label.goal": [
     {
       "type": 0,
-      "value": "Цел"
+      "value": "Goal"
     }
   ],
   "label.goals": [
     {
       "type": 0,
-      "value": "Цели"
+      "value": "Goals"
     }
   ],
   "label.goals-description": [
     {
       "type": 0,
-      "value": "Следете целите си за прегледи на страници и събития."
+      "value": "Track your goals for pageviews and events."
     }
   ],
   "label.greater-than": [
@@ -665,28 +521,16 @@
       "value": "По-голямо или равно на"
     }
   ],
-  "label.grouped": [
+  "label.host": [
     {
       "type": 0,
-      "value": "Групирано"
+      "value": "Host"
     }
   ],
-  "label.hostname": [
+  "label.hosts": [
     {
       "type": 0,
-      "value": "Име на хост"
-    }
-  ],
-  "label.includes": [
-    {
-      "type": 0,
-      "value": "Включва"
-    }
-  ],
-  "label.insight": [
-    {
-      "type": 0,
-      "value": "Прозрение"
+      "value": "Hosts"
     }
   ],
   "label.insights": [
@@ -707,12 +551,6 @@
       "value": "Е"
     }
   ],
-  "label.is-false": [
-    {
-      "type": 0,
-      "value": "Грешно"
-    }
-  ],
   "label.is-not": [
     {
       "type": 0,
@@ -731,12 +569,6 @@
       "value": "Зададено е"
     }
   ],
-  "label.is-true": [
-    {
-      "type": 0,
-      "value": "Вярно"
-    }
-  ],
   "label.join": [
     {
       "type": 0,
@@ -752,19 +584,13 @@
   "label.journey": [
     {
       "type": 0,
-      "value": "Пътешествие"
+      "value": "Journey"
     }
   ],
   "label.journey-description": [
     {
       "type": 0,
-      "value": "Разберете как потребителите навигират във вашия уебсайт."
-    }
-  ],
-  "label.journeys": [
-    {
-      "type": 0,
-      "value": "Пътешествия"
+      "value": "Understand how users navigate through your website."
     }
   ],
   "label.language": [
@@ -783,12 +609,6 @@
     {
       "type": 0,
       "value": "Лаптоп"
-    }
-  ],
-  "label.last-click": [
-    {
-      "type": 0,
-      "value": "Последно кликване"
     }
   ],
   "label.last-days": [
@@ -863,12 +683,6 @@
       "value": "По-малко или равно на"
     }
   ],
-  "label.links": [
-    {
-      "type": 0,
-      "value": "Връзки"
-    }
-  ],
   "label.login": [
     {
       "type": 0,
@@ -890,25 +704,13 @@
   "label.manager": [
     {
       "type": 0,
-      "value": "Мениджър"
+      "value": "Manager"
     }
   ],
   "label.max": [
     {
       "type": 0,
       "value": "Максимум"
-    }
-  ],
-  "label.maximize": [
-    {
-      "type": 0,
-      "value": "Разшири"
-    }
-  ],
-  "label.medium": [
-    {
-      "type": 0,
-      "value": "Среден"
     }
   ],
   "label.member": [
@@ -933,12 +735,6 @@
     {
       "type": 0,
       "value": "Мобилен"
-    }
-  ],
-  "label.model": [
-    {
-      "type": 0,
-      "value": "Модел"
     }
   ],
   "label.more": [
@@ -1017,46 +813,10 @@
       "value": "Добре"
     }
   ],
-  "label.online": [
-    {
-      "type": 0,
-      "value": "Online"
-    }
-  ],
-  "label.organic-search": [
-    {
-      "type": 0,
-      "value": "Органично търсене"
-    }
-  ],
-  "label.organic-shopping": [
-    {
-      "type": 0,
-      "value": "Органично пазаруване"
-    }
-  ],
-  "label.organic-social": [
-    {
-      "type": 0,
-      "value": "Органични социални мрежи"
-    }
-  ],
-  "label.organic-video": [
-    {
-      "type": 0,
-      "value": "Органично видео"
-    }
-  ],
   "label.os": [
     {
       "type": 0,
       "value": "ОС"
-    }
-  ],
-  "label.other": [
-    {
-      "type": 0,
-      "value": "Друго"
     }
   ],
   "label.overview": [
@@ -1069,12 +829,6 @@
     {
       "type": 0,
       "value": "Собственик"
-    }
-  ],
-  "label.page": [
-    {
-      "type": 0,
-      "value": "Страница"
     }
   ],
   "label.page-of": [
@@ -1113,36 +867,6 @@
       "value": "Страници"
     }
   ],
-  "label.paid-ads": [
-    {
-      "type": 0,
-      "value": "Платени реклами"
-    }
-  ],
-  "label.paid-search": [
-    {
-      "type": 0,
-      "value": "Платено търсене"
-    }
-  ],
-  "label.paid-shopping": [
-    {
-      "type": 0,
-      "value": "Платено пазаруване"
-    }
-  ],
-  "label.paid-social": [
-    {
-      "type": 0,
-      "value": "Платени социални мрежи"
-    }
-  ],
-  "label.paid-video": [
-    {
-      "type": 0,
-      "value": "Платено видео"
-    }
-  ],
   "label.password": [
     {
       "type": 0,
@@ -1152,19 +876,13 @@
   "label.path": [
     {
       "type": 0,
-      "value": "Път"
+      "value": "Path"
     }
   ],
   "label.paths": [
     {
       "type": 0,
-      "value": "Пътища"
-    }
-  ],
-  "label.pixels": [
-    {
-      "type": 0,
-      "value": "Пиксели"
+      "value": "Paths"
     }
   ],
   "label.powered-by": [
@@ -1204,13 +922,13 @@
   "label.properties": [
     {
       "type": 0,
-      "value": "Свойства"
+      "value": "Properties"
     }
   ],
   "label.property": [
     {
       "type": 0,
-      "value": "Свойство"
+      "value": "Property"
     }
   ],
   "label.queries": [
@@ -1235,12 +953,6 @@
     {
       "type": 0,
       "value": "В реално време"
-    }
-  ],
-  "label.referral": [
-    {
-      "type": 0,
-      "value": "Реферал"
     }
   ],
   "label.referrer": [
@@ -1277,12 +989,6 @@
     {
       "type": 0,
       "value": "Региони"
-    }
-  ],
-  "label.remaining": [
-    {
-      "type": 0,
-      "value": "Оставащи"
     }
   ],
   "label.remove": [
@@ -1345,6 +1051,12 @@
       "value": "Look into your revenue across time."
     }
   ],
+  "label.revenue-property": [
+    {
+      "type": 0,
+      "value": "Revenue Property"
+    }
+  ],
   "label.role": [
     {
       "type": 0,
@@ -1387,12 +1099,6 @@
       "value": "Избери дата"
     }
   ],
-  "label.select-filter": [
-    {
-      "type": 0,
-      "value": "Избери филтър"
-    }
-  ],
   "label.select-role": [
     {
       "type": 0,
@@ -1408,13 +1114,7 @@
   "label.session": [
     {
       "type": 0,
-      "value": "Сесия"
-    }
-  ],
-  "label.session-data": [
-    {
-      "type": 0,
-      "value": "Данни за сесия"
+      "value": "Session"
     }
   ],
   "label.sessions": [
@@ -1429,12 +1129,6 @@
       "value": "Настройки"
     }
   ],
-  "label.share": [
-    {
-      "type": 0,
-      "value": "Сподели"
-    }
-  ],
   "label.share-url": [
     {
       "type": 0,
@@ -1447,22 +1141,10 @@
       "value": "Един ден"
     }
   ],
-  "label.sms": [
-    {
-      "type": 0,
-      "value": "SMS"
-    }
-  ],
-  "label.sources": [
-    {
-      "type": 0,
-      "value": "Източници"
-    }
-  ],
   "label.start-step": [
     {
       "type": 0,
-      "value": "Начална стъпка"
+      "value": "Start Step"
     }
   ],
   "label.steps": [
@@ -1483,18 +1165,6 @@
       "value": "Таблет"
     }
   ],
-  "label.tag": [
-    {
-      "type": 0,
-      "value": "Етикет"
-    }
-  ],
-  "label.tags": [
-    {
-      "type": 0,
-      "value": "Етикети"
-    }
-  ],
   "label.team": [
     {
       "type": 0,
@@ -1510,7 +1180,7 @@
   "label.team-manager": [
     {
       "type": 0,
-      "value": "Мениджър на екип"
+      "value": "Team manager"
     }
   ],
   "label.team-member": [
@@ -1531,12 +1201,6 @@
       "value": "Собственик на екипа"
     }
   ],
-  "label.team-settings": [
-    {
-      "type": 0,
-      "value": "Настройки на екипа"
-    }
-  ],
   "label.team-view-only": [
     {
       "type": 0,
@@ -1553,12 +1217,6 @@
     {
       "type": 0,
       "value": "Екипи"
-    }
-  ],
-  "label.terms": [
-    {
-      "type": 0,
-      "value": "Термини"
     }
   ],
   "label.theme": [
@@ -1693,10 +1351,28 @@
       "value": "Актуализирай"
     }
   ],
+  "label.url": [
+    {
+      "type": 0,
+      "value": "URL адрес"
+    }
+  ],
+  "label.urls": [
+    {
+      "type": 0,
+      "value": "URL адреси"
+    }
+  ],
   "label.user": [
     {
       "type": 0,
       "value": "Потребител"
+    }
+  ],
+  "label.user-property": [
+    {
+      "type": 0,
+      "value": "User Property"
     }
   ],
   "label.username": [
@@ -1855,12 +1531,6 @@
       "value": "x"
     }
   ],
-  "message.bad-request": [
-    {
-      "type": 0,
-      "value": "Bad request"
-    }
-  ],
   "message.collected-data": [
     {
       "type": 0,
@@ -1953,12 +1623,6 @@
     {
       "type": 1,
       "value": "url"
-    }
-  ],
-  "message.forbidden": [
-    {
-      "type": 0,
-      "value": "Forbidden"
     }
   ],
   "message.go-to-settings": [
@@ -2055,18 +1719,6 @@
       "value": "Нямате конфигурирани уебсайтове."
     }
   ],
-  "message.not-found": [
-    {
-      "type": 0,
-      "value": "Not found"
-    }
-  ],
-  "message.nothing-selected": [
-    {
-      "type": 0,
-      "value": "Nothing selected."
-    }
-  ],
   "message.page-not-found": [
     {
       "type": 0,
@@ -2097,12 +1749,6 @@
     {
       "type": 0,
       "value": "Запазено."
-    }
-  ],
-  "message.sever-error": [
-    {
-      "type": 0,
-      "value": "Server error"
     }
   ],
   "message.share-url": [
@@ -2173,12 +1819,6 @@
       "value": "Активирано събитие"
     }
   ],
-  "message.unauthorized": [
-    {
-      "type": 0,
-      "value": "Unauthorized"
-    }
-  ],
   "message.user-deleted": [
     {
       "type": 0,
@@ -2223,6 +1863,12 @@
     {
       "type": 1,
       "value": "device"
+    }
+  ],
+  "message.visitors-dropped-off": [
+    {
+      "type": 0,
+      "value": "Спад на посетителите"
     }
   ]
 }

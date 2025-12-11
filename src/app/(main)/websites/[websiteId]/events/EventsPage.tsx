@@ -1,59 +1,52 @@
 'use client';
-import { Column, Tab, TabList, TabPanel, Tabs } from '@umami/react-zen';
-import { type Key, useState } from 'react';
-import { SessionModal } from '@/app/(main)/websites/[websiteId]/sessions/SessionModal';
-import { WebsiteControls } from '@/app/(main)/websites/[websiteId]/WebsiteControls';
-import { Panel } from '@/components/common/Panel';
+import WebsiteHeader from '../WebsiteHeader';
+import EventsDataTable from './EventsDataTable';
+import EventsMetricsBar from './EventsMetricsBar';
+import EventsChart from '@/components/metrics/EventsChart';
+import { GridRow } from '@/components/layout/Grid';
+import EventsTable from '@/components/metrics/EventsTable';
 import { useMessages } from '@/components/hooks';
-import { EventsChart } from '@/components/metrics/EventsChart';
-import { MetricsTable } from '@/components/metrics/MetricsTable';
+import { Item, Tabs } from 'react-basics';
+import { useState } from 'react';
+import EventProperties from './EventProperties';
 import { getItem, setItem } from '@/lib/storage';
-import { EventProperties } from './EventProperties';
-import { EventsDataTable } from './EventsDataTable';
 
-const KEY_NAME = 'umami.events.tab';
-
-export function EventsPage({ websiteId }) {
-  const [tab, setTab] = useState(getItem(KEY_NAME) || 'chart');
+export default function EventsPage({ websiteId }) {
+  const [label, setLabel] = useState(null);
+  const [tab, setTab] = useState(getItem('eventTab') || 'activity');
   const { formatMessage, labels } = useMessages();
 
-  const handleSelect = (value: Key) => {
-    setItem(KEY_NAME, value);
+  const handleLabelClick = (value: string) => {
+    setLabel(value !== label ? value : '');
+  };
+
+  const onSelect = (value: 'activity' | 'properties') => {
+    setItem('eventTab', value);
     setTab(value);
   };
 
   return (
-    <Column gap="3">
-      <WebsiteControls websiteId={websiteId} />
-      <Panel>
-        <Tabs selectedKey={tab} onSelectionChange={key => handleSelect(key)}>
-          <TabList>
-            <Tab id="chart">{formatMessage(labels.chart)}</Tab>
-            <Tab id="activity">{formatMessage(labels.activity)}</Tab>
-            <Tab id="properties">{formatMessage(labels.properties)}</Tab>
-          </TabList>
-          <TabPanel id="activity">
-            <EventsDataTable websiteId={websiteId} />
-          </TabPanel>
-          <TabPanel id="chart">
-            <Column gap="6">
-              <Column border="bottom" paddingBottom="6">
-                <EventsChart websiteId={websiteId} />
-              </Column>
-              <MetricsTable
-                websiteId={websiteId}
-                type="event"
-                title={formatMessage(labels.event)}
-                metric={formatMessage(labels.count)}
-              />
-            </Column>
-          </TabPanel>
-          <TabPanel id="properties">
-            <EventProperties websiteId={websiteId} />
-          </TabPanel>
+    <>
+      <WebsiteHeader websiteId={websiteId} />
+      <EventsMetricsBar websiteId={websiteId} />
+      <GridRow columns="two-one">
+        <EventsChart websiteId={websiteId} focusLabel={label} />
+        <EventsTable
+          websiteId={websiteId}
+          type="event"
+          title={formatMessage(labels.events)}
+          metric={formatMessage(labels.actions)}
+          onLabelClick={handleLabelClick}
+        />
+      </GridRow>
+      <div>
+        <Tabs selectedKey={tab} onSelect={onSelect} style={{ marginBottom: 30 }}>
+          <Item key="activity">{formatMessage(labels.activity)}</Item>
+          <Item key="properties">{formatMessage(labels.properties)}</Item>
         </Tabs>
-      </Panel>
-      <SessionModal websiteId={websiteId} />
-    </Column>
+        {tab === 'activity' && <EventsDataTable websiteId={websiteId} />}
+        {tab === 'properties' && <EventProperties websiteId={websiteId} />}
+      </div>
+    </>
   );
 }

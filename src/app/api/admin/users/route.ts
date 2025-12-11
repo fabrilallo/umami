@@ -1,14 +1,13 @@
 import { z } from 'zod';
 import { parseRequest } from '@/lib/request';
 import { json, unauthorized } from '@/lib/response';
-import { pagingParams, searchParams } from '@/lib/schema';
-import { canViewUsers } from '@/permissions';
+import { pagingParams } from '@/lib/schema';
+import { canViewUsers } from '@/lib/auth';
 import { getUsers } from '@/queries/prisma/user';
 
 export async function GET(request: Request) {
   const schema = z.object({
     ...pagingParams,
-    ...searchParams,
   });
 
   const { auth, query, error } = await parseRequest(request, schema);
@@ -26,17 +25,11 @@ export async function GET(request: Request) {
       include: {
         _count: {
           select: {
-            websites: {
+            websiteUser: {
               where: { deletedAt: null },
             },
           },
         },
-      },
-      omit: {
-        password: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     },
     query,

@@ -1,31 +1,27 @@
+import { Chart, ChartProps } from '@/components/charts/Chart';
 import { useState } from 'react';
-import { Chart, type ChartProps } from '@/components/charts/Chart';
-import { ChartTooltip } from '@/components/charts/ChartTooltip';
+import { StatusLight } from 'react-basics';
+import { formatLongNumber } from '@/lib/format';
 
 export interface PieChartProps extends ChartProps {
   type?: 'doughnut' | 'pie';
 }
 
-export function PieChart({ type = 'pie', ...props }: PieChartProps) {
+export default function PieChart(props: PieChartProps) {
   const [tooltip, setTooltip] = useState(null);
+  const { type = 'pie' } = props;
 
   const handleTooltip = ({ tooltip }) => {
-    const { opacity, labelColors, title, dataPoints } = tooltip;
+    const { labelColors, dataPoints } = tooltip;
 
     setTooltip(
-      opacity
-        ? {
-            color: labelColors?.[0]?.backgroundColor,
-            value: `${title}: ${dataPoints[0].raw}`,
-          }
-        : null,
+      tooltip.opacity ? (
+        <StatusLight color={labelColors?.[0]?.backgroundColor}>
+          {formatLongNumber(dataPoints?.[0]?.raw)} {dataPoints?.[0]?.label}
+        </StatusLight>
+      ) : null,
     );
   };
 
-  return (
-    <>
-      <Chart {...props} type={type} onTooltip={handleTooltip} />
-      {tooltip && <ChartTooltip {...tooltip} />}
-    </>
-  );
+  return <Chart {...props} type={type} tooltip={tooltip} onTooltip={handleTooltip} />;
 }

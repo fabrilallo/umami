@@ -1,5 +1,4 @@
-import { Row } from '@umami/react-zen';
-import type { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export function TypeIcon({
   type,
@@ -11,11 +10,11 @@ export function TypeIcon({
   children?: ReactNode;
 }) {
   return (
-    <Row gap="3" alignItems="center">
+    <>
       <img
-        src={`${process.env.basePath || ''}/images/${type}/${
-          value?.replaceAll(' ', '-').toLowerCase() || 'unknown'
-        }.png`}
+        src={`${process.env.basePath || ''}/images/${type}/${value
+          ?.replaceAll(' ', '-')
+          .toLowerCase()}.png`}
         onError={e => {
           e.currentTarget.src = `${process.env.basePath || ''}/images/${type}/unknown.png`;
         }}
@@ -24,6 +23,8 @@ export function TypeIcon({
         height={type === 'country' ? undefined : 16}
       />
       {children}
-    </Row>
+    </>
   );
 }
+
+export default TypeIcon;

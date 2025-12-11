@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { ROLES } from '@/lib/constants';
+import { unauthorized, json, badRequest, notFound } from '@/lib/response';
+import { canCreateTeam } from '@/lib/auth';
 import { parseRequest } from '@/lib/request';
-import { badRequest, json, notFound } from '@/lib/response';
-import { createTeamUser, findTeam, getTeamUser } from '@/queries/prisma';
+import { ROLES } from '@/lib/constants';
+import { createTeamUser, findTeam, getTeamUser } from '@/queries';
 
 export async function POST(request: Request) {
   const schema = z.object({
@@ -15,6 +16,10 @@ export async function POST(request: Request) {
     return error();
   }
 
+  if (!(await canCreateTeam(auth))) {
+    return unauthorized();
+  }
+
   const { accessCode } = body;
 
   const team = await findTeam({
@@ -24,13 +29,13 @@ export async function POST(request: Request) {
   });
 
   if (!team) {
-    return notFound({ message: 'Team not found.', code: 'team-not-found' });
+    return notFound('Team not found.');
   }
 
   const teamUser = await getTeamUser(team.id, auth.user.id);
 
   if (teamUser) {
-    return badRequest({ message: 'User is already a team member.' });
+    return badRequest('User is already a team member.');
   }
 
   const user = await createTeamUser(auth.user.id, team.id, ROLES.teamMember);

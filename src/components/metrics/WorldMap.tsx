@@ -1,37 +1,42 @@
-import { Column, type ColumnProps, FloatingTooltip, useTheme } from '@umami/react-zen';
-import { colord } from 'colord';
-import { useMemo, useState } from 'react';
+import { useState, useMemo, HTMLAttributes } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
-import {
-  useCountryNames,
-  useLocale,
-  useMessages,
-  useWebsiteMetricsQuery,
-} from '@/components/hooks';
-import { getThemeColors } from '@/lib/colors';
+import classNames from 'classnames';
+import { colord } from 'colord';
+import HoverTooltip from '@/components/common/HoverTooltip';
 import { ISO_COUNTRIES, MAP_FILE } from '@/lib/constants';
-import { percentFilter } from '@/lib/filters';
+import { useDateRange, useTheme, useWebsiteMetrics } from '@/components/hooks';
+import { useCountryNames } from '@/components/hooks';
+import { useLocale } from '@/components/hooks';
+import { useMessages } from '@/components/hooks';
 import { formatLongNumber } from '@/lib/format';
+import { percentFilter } from '@/lib/filters';
+import styles from './WorldMap.module.css';
 
-export interface WorldMapProps extends ColumnProps {
+export function WorldMap({
+  websiteId,
+  data,
+  className,
+  ...props
+}: {
   websiteId?: string;
   data?: any[];
-}
-
-export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) {
   const [tooltip, setTooltipPopup] = useState();
-  const { theme } = useTheme();
-  const { colors } = getThemeColors(theme);
+  const { theme, colors } = useTheme();
   const { locale } = useLocale();
   const { formatMessage, labels } = useMessages();
   const { countryNames } = useCountryNames(locale);
   const visitorsLabel = formatMessage(labels.visitors).toLocaleLowerCase(locale);
   const unknownLabel = formatMessage(labels.unknown);
-
-  const { data: mapData } = useWebsiteMetricsQuery(websiteId, {
+  const {
+    dateRange: { startDate, endDate },
+  } = useDateRange(websiteId);
+  const { data: mapData } = useWebsiteMetrics(websiteId, {
     type: 'country',
+    startAt: +startDate,
+    endAt: +endDate,
   });
-
   const metrics = useMemo(
     () => (data || mapData ? percentFilter((data || mapData) as any[]) : []),
     [data, mapData],
@@ -65,11 +70,11 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
   };
 
   return (
-    <Column
+    <div
       {...props}
+      className={classNames(styles.container, className)}
       data-tip=""
       data-for="world-map-tooltip"
-      style={{ margin: 'auto 0', overflow: 'hidden' }}
     >
       <ComposableMap projection="geoMercator">
         <ZoomableGroup zoom={0.8} minZoom={0.7} center={[0, 40]}>
@@ -99,7 +104,9 @@ export function WorldMap({ websiteId, data, ...props }: WorldMapProps) {
           </Geographies>
         </ZoomableGroup>
       </ComposableMap>
-      {tooltip && <FloatingTooltip>{tooltip}</FloatingTooltip>}
-    </Column>
+      {tooltip && <HoverTooltip>{tooltip}</HoverTooltip>}
+    </div>
   );
 }
+
+export default WorldMap;

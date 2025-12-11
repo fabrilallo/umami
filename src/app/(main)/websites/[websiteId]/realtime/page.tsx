@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { RealtimePage } from './RealtimePage';
+import WebsiteRealtimePage from './WebsiteRealtimePage';
+import { Metadata } from 'next';
 
 export default async function ({ params }: { params: Promise<{ websiteId: string }> }) {
   const { websiteId } = await params;
 
-  return <RealtimePage websiteId={websiteId} />;
+  return <WebsiteRealtimePage websiteId={websiteId} />;
 }
 
 export const metadata: Metadata = {

@@ -148,6 +148,6 @@ export type UmamiTracker = {
   };
 };
 
-export interface Window {
+interface Window {
   umami: UmamiTracker;
 }

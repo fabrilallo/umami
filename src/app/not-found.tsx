@@ -1,12 +1,12 @@
 'use client';
-import { Flexbox } from '@umami/react-zen';
+import { Flexbox } from 'react-basics';
 import { useMessages } from '@/components/hooks';
 
 export default function () {
   const { formatMessage, labels } = useMessages();
 
   return (
-    <Flexbox alignItems="center" justifyContent="center" flexGrow="1" minHeight="600px">
+    <Flexbox alignItems="center" justifyContent="center" flex={1} style={{ minHeight: 600 }}>
       <h1>{formatMessage(labels.pageNotFound)}</h1>
     </Flexbox>
   );

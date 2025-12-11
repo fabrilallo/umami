@@ -1,4 +1,4 @@
-name: Create docker images (cloud)
+name: Create docker images
 
 on:
   push:

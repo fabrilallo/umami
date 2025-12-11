@@ -1,23 +1,18 @@
 import { useMemo } from 'react';
-import { LoadingPanel } from '@/components/common/LoadingPanel';
-import { useDateRange, useTimezone } from '@/components/hooks';
-import { useWebsitePageviewsQuery } from '@/components/hooks/queries/useWebsitePageviewsQuery';
-import { PageviewsChart } from '@/components/metrics/PageviewsChart';
+import PageviewsChart from '@/components/metrics/PageviewsChart';
+import useWebsitePageviews from '@/components/hooks/queries/useWebsitePageviews';
+import { useDateRange } from '@/components/hooks';
 
 export function WebsiteChart({
   websiteId,
-  compareMode,
+  compareMode = false,
 }: {
   websiteId: string;
   compareMode?: boolean;
 }) {
-  const { timezone } = useTimezone();
-  const { dateRange, dateCompare } = useDateRange({ timezone: timezone });
+  const { dateRange, dateCompare } = useDateRange(websiteId);
   const { startDate, endDate, unit, value } = dateRange;
-  const { data, isLoading, isFetching, error } = useWebsitePageviewsQuery({
-    websiteId,
-    compare: compareMode ? dateCompare?.compare : undefined,
-  });
+  const { data, isLoading } = useWebsitePageviews(websiteId, compareMode ? dateCompare : undefined);
   const { pageviews, sessions, compare } = (data || {}) as any;
 
   const chartData = useMemo(() => {
@@ -28,7 +23,7 @@ export function WebsiteChart({
       };
 
       if (compare) {
-        result.compare = {
+        result['compare'] = {
           pageviews: result.pageviews.map(({ x }, i) => ({
             x,
             y: compare.pageviews[i]?.y,
@@ -48,14 +43,15 @@ export function WebsiteChart({
   }, [data, startDate, endDate, unit]);
 
   return (
-    <LoadingPanel data={data} isFetching={isFetching} isLoading={isLoading} error={error}>
-      <PageviewsChart
-        key={value}
-        data={chartData}
-        minDate={startDate}
-        maxDate={endDate}
-        unit={unit}
-      />
-    </LoadingPanel>
+    <PageviewsChart
+      data={chartData}
+      minDate={startDate.toISOString()}
+      maxDate={endDate.toISOString()}
+      unit={unit}
+      isLoading={isLoading}
+      isAllTime={value === 'all'}
+    />
   );
 }
+
+export default WebsiteChart;

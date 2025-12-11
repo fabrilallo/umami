@@ -1,23 +1,25 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import * as reactQuery from '@tanstack/react-query';
 import { getClientAuthToken } from '@/lib/client';
 import { SHARE_TOKEN_HEADER } from '@/lib/constants';
-import { type FetchResponse, httpDelete, httpGet, httpPost, httpPut } from '@/lib/fetch';
-import { useApp } from '@/store/app';
+import { httpGet, httpPost, httpPut, httpDelete, FetchResponse } from '@/lib/fetch';
+import useStore from '@/store/app';
 
 const selector = (state: { shareToken: { token?: string } }) => state.shareToken;
 
 async function handleResponse(res: FetchResponse): Promise<any> {
   if (!res.ok) {
-    const { message, code, status } = res?.data?.error || {};
-
-    return Promise.reject(Object.assign(new Error(message), { code, status }));
+    return Promise.reject(new Error(res.error?.error || res.error || 'Unexpectd error.'));
   }
   return Promise.resolve(res.data);
 }
 
+function handleError(err: Error | string) {
+  return Promise.reject((err as Error)?.message || err || null);
+}
+
 export function useApi() {
-  const shareToken = useApp(selector);
+  const shareToken = useStore(selector);
 
   const defaultHeaders = {
     authorization: `Bearer ${getClientAuthToken()}`,
@@ -36,32 +38,41 @@ export function useApi() {
   return {
     get: useCallback(
       async (url: string, params: object = {}, headers: object = {}) => {
-        return httpGet(getUrl(url), params, getHeaders(headers)).then(handleResponse);
+        return httpGet(getUrl(url), params, getHeaders(headers))
+          .then(handleResponse)
+          .catch(handleError);
       },
       [httpGet],
     ),
 
     post: useCallback(
       async (url: string, params: object = {}, headers: object = {}) => {
-        return httpPost(getUrl(url), params, getHeaders(headers)).then(handleResponse);
+        return httpPost(getUrl(url), params, getHeaders(headers))
+          .then(handleResponse)
+          .catch(handleError);
       },
       [httpPost],
     ),
 
     put: useCallback(
       async (url: string, params: object = {}, headers: object = {}) => {
-        return httpPut(getUrl(url), params, getHeaders(headers)).then(handleResponse);
+        return httpPut(getUrl(url), params, getHeaders(headers))
+          .then(handleResponse)
+          .catch(handleError);
       },
       [httpPut],
     ),
 
     del: useCallback(
       async (url: string, params: object = {}, headers: object = {}) => {
-        return httpDelete(getUrl(url), params, getHeaders(headers)).then(handleResponse);
+        return httpDelete(getUrl(url), params, getHeaders(headers))
+          .then(handleResponse)
+          .catch(handleError);
       },
       [httpDelete],
     ),
-    useQuery,
-    useMutation,
+    ...reactQuery,
   };
 }
+
+export default useApi;

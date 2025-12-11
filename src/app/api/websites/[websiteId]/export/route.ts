@@ -1,18 +1,19 @@
+import { z } from 'zod';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import { z } from 'zod';
-import { getQueryFilters, parseRequest } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { dateRangeParams, pagingParams } from '@/lib/schema';
-import { canViewWebsite } from '@/permissions';
-import { getEventMetrics, getPageviewMetrics, getSessionMetrics } from '@/queries/sql';
+import { getRequestFilters, parseRequest } from '@/lib/request';
+import { unauthorized, json } from '@/lib/response';
+import { canViewWebsite } from '@/lib/auth';
+import { pagingParams } from '@/lib/schema';
+import { getEventMetrics, getPageviewMetrics, getSessionMetrics } from '@/queries';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ websiteId: string }> },
 ) {
   const schema = z.object({
-    ...dateRangeParams,
+    startAt: z.coerce.number().int(),
+    endAt: z.coerce.number().int(),
     ...pagingParams,
   });
 
@@ -23,21 +24,29 @@ export async function GET(
   }
 
   const { websiteId } = await params;
+  const { startAt, endAt } = query;
 
   if (!(await canViewWebsite(auth, websiteId))) {
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(query, websiteId);
+  const startDate = new Date(+startAt);
+  const endDate = new Date(+endAt);
+
+  const filters = {
+    ...(await getRequestFilters(query)),
+    startDate,
+    endDate,
+  };
 
   const [events, pages, referrers, browsers, os, devices, countries] = await Promise.all([
-    getEventMetrics(websiteId, { type: 'event' }, filters),
-    getPageviewMetrics(websiteId, { type: 'path' }, filters),
-    getPageviewMetrics(websiteId, { type: 'referrer' }, filters),
-    getSessionMetrics(websiteId, { type: 'browser' }, filters),
-    getSessionMetrics(websiteId, { type: 'os' }, filters),
-    getSessionMetrics(websiteId, { type: 'device' }, filters),
-    getSessionMetrics(websiteId, { type: 'country' }, filters),
+    getEventMetrics(websiteId, 'event', filters),
+    getPageviewMetrics(websiteId, 'url', filters),
+    getPageviewMetrics(websiteId, 'referrer', filters),
+    getSessionMetrics(websiteId, 'browser', filters),
+    getSessionMetrics(websiteId, 'os', filters),
+    getSessionMetrics(websiteId, 'device', filters),
+    getSessionMetrics(websiteId, 'country', filters),
   ]);
 
   const zip = new JSZip();

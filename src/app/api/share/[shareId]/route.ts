@@ -1,9 +1,9 @@
-import { secret } from '@/lib/crypto';
-import { createToken } from '@/lib/jwt';
 import { json, notFound } from '@/lib/response';
-import { getSharedWebsite } from '@/queries/prisma';
+import { createToken } from '@/lib/jwt';
+import { secret } from '@/lib/crypto';
+import { getSharedWebsite } from '@/queries';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ shareId: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ shareId: string }> }) {
   const { shareId } = await params;
 
   const website = await getSharedWebsite(shareId);

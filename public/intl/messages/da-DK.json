@@ -2,7 +2,7 @@
   "label.access-code": [
     {
       "type": 0,
-      "value": "Adgangskode"
+      "value": "Access code"
     }
   ],
   "label.actions": [
@@ -14,37 +14,31 @@
   "label.activity": [
     {
       "type": 0,
-      "value": "Aktivitetslog"
+      "value": "Activity log"
     }
   ],
   "label.add": [
     {
       "type": 0,
-      "value": "Tilføj"
-    }
-  ],
-  "label.add-board": [
-    {
-      "type": 0,
-      "value": "Tilføj tavle"
+      "value": "Add"
     }
   ],
   "label.add-description": [
     {
       "type": 0,
-      "value": "Tilføj beskrivelse"
+      "value": "Add description"
     }
   ],
   "label.add-member": [
     {
       "type": 0,
-      "value": "Tilføj medlem"
+      "value": "Add member"
     }
   ],
   "label.add-step": [
     {
       "type": 0,
-      "value": "Tilføj trin"
+      "value": "Add step"
     }
   ],
   "label.add-website": [
@@ -59,16 +53,10 @@
       "value": "Administrator"
     }
   ],
-  "label.affiliate": [
-    {
-      "type": 0,
-      "value": "Partner"
-    }
-  ],
   "label.after": [
     {
       "type": 0,
-      "value": "Efter"
+      "value": "After"
     }
   ],
   "label.all": [
@@ -86,31 +74,13 @@
   "label.analytics": [
     {
       "type": 0,
-      "value": "Analyser"
-    }
-  ],
-  "label.apply": [
-    {
-      "type": 0,
-      "value": "Anvend"
-    }
-  ],
-  "label.attribution": [
-    {
-      "type": 0,
-      "value": "Attribuering"
-    }
-  ],
-  "label.attribution-description": [
-    {
-      "type": 0,
-      "value": "Se, hvordan brugere interagerer med din markedsføring, og hvad der driver konverteringer."
+      "value": "Analytics"
     }
   ],
   "label.average": [
     {
       "type": 0,
-      "value": "Gennemsnit"
+      "value": "Average"
     }
   ],
   "label.back": [
@@ -122,13 +92,7 @@
   "label.before": [
     {
       "type": 0,
-      "value": "Før"
-    }
-  ],
-  "label.boards": [
-    {
-      "type": 0,
-      "value": "Tavler"
+      "value": "Before"
     }
   ],
   "label.bounce-rate": [
@@ -140,7 +104,7 @@
   "label.breakdown": [
     {
       "type": 0,
-      "value": "Opdeling"
+      "value": "Breakdown"
     }
   ],
   "label.browser": [
@@ -155,12 +119,6 @@
       "value": "Browsere"
     }
   ],
-  "label.campaigns": [
-    {
-      "type": 0,
-      "value": "Kampagner"
-    }
-  ],
   "label.cancel": [
     {
       "type": 0,
@@ -173,52 +131,34 @@
       "value": "Skift adgangskode"
     }
   ],
-  "label.channels": [
-    {
-      "type": 0,
-      "value": "Kanaler"
-    }
-  ],
   "label.cities": [
     {
       "type": 0,
-      "value": "Byer"
+      "value": "Cities"
     }
   ],
   "label.city": [
     {
       "type": 0,
-      "value": "By"
+      "value": "City"
     }
   ],
   "label.clear-all": [
     {
       "type": 0,
-      "value": "Ryd alt"
-    }
-  ],
-  "label.cohort": [
-    {
-      "type": 0,
-      "value": "Kohorte"
+      "value": "Clear all"
     }
   ],
   "label.compare": [
     {
       "type": 0,
-      "value": "Sammenlign"
-    }
-  ],
-  "label.compare-dates": [
-    {
-      "type": 0,
-      "value": "Sammenlign datoer"
+      "value": "Compare"
     }
   ],
   "label.confirm": [
     {
       "type": 0,
-      "value": "Bekræft"
+      "value": "Confirm"
     }
   ],
   "label.confirm-password": [
@@ -233,40 +173,16 @@
       "value": "Contains"
     }
   ],
-  "label.content": [
-    {
-      "type": 0,
-      "value": "Indhold"
-    }
-  ],
   "label.continue": [
     {
       "type": 0,
-      "value": "Fortsæt"
-    }
-  ],
-  "label.conversion": [
-    {
-      "type": 0,
-      "value": "Konvertering"
-    }
-  ],
-  "label.conversion-rate": [
-    {
-      "type": 0,
-      "value": "Konverteringsrate"
-    }
-  ],
-  "label.conversion-step": [
-    {
-      "type": 0,
-      "value": "Konverteringstrin"
+      "value": "Continue"
     }
   ],
   "label.count": [
     {
       "type": 0,
-      "value": "Antal"
+      "value": "Count"
     }
   ],
   "label.countries": [
@@ -278,55 +194,49 @@
   "label.country": [
     {
       "type": 0,
-      "value": "Land"
+      "value": "Country"
     }
   ],
   "label.create": [
     {
       "type": 0,
-      "value": "Opret"
+      "value": "Create"
     }
   ],
   "label.create-report": [
     {
       "type": 0,
-      "value": "Opret rapport"
+      "value": "Create report"
     }
   ],
   "label.create-team": [
     {
       "type": 0,
-      "value": "Opret team"
+      "value": "Create team"
     }
   ],
   "label.create-user": [
     {
       "type": 0,
-      "value": "Opret bruger"
+      "value": "Create user"
     }
   ],
   "label.created": [
     {
       "type": 0,
-      "value": "Oprettet"
+      "value": "Created"
     }
   ],
   "label.created-by": [
     {
       "type": 0,
-      "value": "Oprettet af"
-    }
-  ],
-  "label.currency": [
-    {
-      "type": 0,
-      "value": "Valuta"
+      "value": "Created By"
     }
   ],
   "label.current": [
     {
       "type": 0,
-      "value": "Nuværende"
+      "value": "Current"
     }
   ],
   "label.current-password": [
@@ -356,7 +266,7 @@
   "label.date": [
     {
       "type": 0,
-      "value": "Dato"
+      "value": "Date"
     }
   ],
   "label.date-range": [
@@ -368,7 +278,7 @@
   "label.day": [
     {
       "type": 0,
-      "value": "Dag"
+      "value": "Day"
     }
   ],
   "label.default-date-range": [
@@ -386,19 +296,19 @@
   "label.delete-report": [
     {
       "type": 0,
-      "value": "Slet rapport"
+      "value": "Delete report"
     }
   ],
   "label.delete-team": [
     {
       "type": 0,
-      "value": "Slet team"
+      "value": "Delete team"
     }
   ],
   "label.delete-user": [
     {
       "type": 0,
-      "value": "Slet bruger"
+      "value": "Delete user"
     }
   ],
   "label.delete-website": [
@@ -410,25 +320,25 @@
   "label.description": [
     {
       "type": 0,
-      "value": "Beskrivelse"
+      "value": "Description"
     }
   ],
   "label.desktop": [
     {
       "type": 0,
-      "value": "Skrivebord"
+      "value": "Desktop"
     }
   ],
   "label.details": [
     {
       "type": 0,
-      "value": "Detaljer"
+      "value": "Details"
     }
   ],
   "label.device": [
     {
       "type": 0,
-      "value": "Enhed"
+      "value": "Device"
     }
   ],
   "label.devices": [
@@ -437,40 +347,16 @@
       "value": "Enheder"
     }
   ],
-  "label.direct": [
-    {
-      "type": 0,
-      "value": "Direkte"
-    }
-  ],
   "label.dismiss": [
     {
       "type": 0,
       "value": "Afvis"
     }
   ],
-  "label.distinct-id": [
-    {
-      "type": 0,
-      "value": "Unikt ID"
-    }
-  ],
   "label.does-not-contain": [
     {
       "type": 0,
-      "value": "Indeholder ikke"
-    }
-  ],
-  "label.does-not-include": [
-    {
-      "type": 0,
-      "value": "Inkluderer ikke"
-    }
-  ],
-  "label.doest-not-exist": [
-    {
-      "type": 0,
-      "value": "Findes ikke"
+      "value": "Does not contain"
     }
   ],
   "label.domain": [
@@ -482,7 +368,7 @@
   "label.dropoff": [
     {
       "type": 0,
-      "value": "Frafald"
+      "value": "Dropoff"
     }
   ],
   "label.edit": [
@@ -494,19 +380,13 @@
   "label.edit-dashboard": [
     {
       "type": 0,
-      "value": "Rediger betjeningspanel"
+      "value": "Edit dashboard"
     }
   ],
   "label.edit-member": [
     {
       "type": 0,
-      "value": "Rediger medlem"
-    }
-  ],
-  "label.email": [
-    {
-      "type": 0,
-      "value": "E-mail"
+      "value": "Edit member"
     }
   ],
   "label.enable-share-url": [
@@ -518,31 +398,25 @@
   "label.end-step": [
     {
       "type": 0,
-      "value": "Sluttrin"
+      "value": "End Step"
     }
   ],
   "label.entry": [
     {
       "type": 0,
-      "value": "Indgangs-URL"
+      "value": "Entry URL"
     }
   ],
   "label.event": [
     {
       "type": 0,
-      "value": "Hændelse"
+      "value": "Event"
     }
   ],
   "label.event-data": [
     {
       "type": 0,
-      "value": "Hændelsesdata"
-    }
-  ],
-  "label.event-name": [
-    {
-      "type": 0,
-      "value": "Hændelsesnavn"
+      "value": "Event data"
     }
   ],
   "label.events": [
@@ -551,34 +425,28 @@
       "value": "Hændelser"
     }
   ],
-  "label.exists": [
-    {
-      "type": 0,
-      "value": "Findes"
-    }
-  ],
   "label.exit": [
     {
       "type": 0,
-      "value": "Udgangs-URL"
+      "value": "Exit URL"
     }
   ],
   "label.false": [
     {
       "type": 0,
-      "value": "Falsk"
+      "value": "False"
     }
   ],
   "label.field": [
     {
       "type": 0,
-      "value": "Felt"
+      "value": "Field"
     }
   ],
   "label.fields": [
     {
       "type": 0,
-      "value": "Felter"
+      "value": "Fields"
     }
   ],
   "label.filter": [
@@ -602,169 +470,127 @@
   "label.filters": [
     {
       "type": 0,
-      "value": "Filtre"
-    }
-  ],
-  "label.first-click": [
-    {
-      "type": 0,
-      "value": "Første klik"
+      "value": "Filters"
     }
   ],
   "label.first-seen": [
     {
       "type": 0,
-      "value": "Først set"
+      "value": "First seen"
     }
   ],
   "label.funnel": [
     {
       "type": 0,
-      "value": "Tragt"
+      "value": "Funnel"
     }
   ],
   "label.funnel-description": [
     {
       "type": 0,
-      "value": "Forstå brugernes konverterings- og frafaldsrate."
-    }
-  ],
-  "label.funnels": [
-    {
-      "type": 0,
-      "value": "Tragte"
+      "value": "Understand the conversion and drop-off rate of users."
     }
   ],
   "label.goal": [
     {
       "type": 0,
-      "value": "Mål"
+      "value": "Goal"
     }
   ],
   "label.goals": [
     {
       "type": 0,
-      "value": "Mål"
+      "value": "Goals"
     }
   ],
   "label.goals-description": [
     {
       "type": 0,
-      "value": "Følg dine mål for sidevisninger og hændelser."
+      "value": "Track your goals for pageviews and events."
     }
   ],
   "label.greater-than": [
     {
       "type": 0,
-      "value": "Større end"
+      "value": "Greater than"
     }
   ],
   "label.greater-than-equals": [
     {
       "type": 0,
-      "value": "Større end eller lig med"
+      "value": "Greater than or equals"
     }
   ],
-  "label.grouped": [
+  "label.host": [
     {
       "type": 0,
-      "value": "Gruperet"
+      "value": "Host"
     }
   ],
-  "label.hostname": [
+  "label.hosts": [
     {
       "type": 0,
-      "value": "Værtsnavn"
-    }
-  ],
-  "label.includes": [
-    {
-      "type": 0,
-      "value": "Inkluderer"
-    }
-  ],
-  "label.insight": [
-    {
-      "type": 0,
-      "value": "Indsigt"
+      "value": "Hosts"
     }
   ],
   "label.insights": [
     {
       "type": 0,
-      "value": "Indsigter"
+      "value": "Insights"
     }
   ],
   "label.insights-description": [
     {
       "type": 0,
-      "value": "Dyk dybere ned i dine data ved at bruge segmenter og filtre."
+      "value": "Dive deeper into your data by using segments and filters."
     }
   ],
   "label.is": [
     {
       "type": 0,
-      "value": "Er"
-    }
-  ],
-  "label.is-false": [
-    {
-      "type": 0,
-      "value": "Er falsk"
+      "value": "Is"
     }
   ],
   "label.is-not": [
     {
       "type": 0,
-      "value": "Er ikke"
+      "value": "Is not"
     }
   ],
   "label.is-not-set": [
     {
       "type": 0,
-      "value": "Er ikke sat"
+      "value": "Is not set"
     }
   ],
   "label.is-set": [
     {
       "type": 0,
-      "value": "Er sat"
-    }
-  ],
-  "label.is-true": [
-    {
-      "type": 0,
-      "value": "Er sandt"
+      "value": "Is set"
     }
   ],
   "label.join": [
     {
       "type": 0,
-      "value": "Deltag"
+      "value": "Join"
     }
   ],
   "label.join-team": [
     {
       "type": 0,
-      "value": "Deltag i team"
+      "value": "Join team"
     }
   ],
   "label.journey": [
     {
       "type": 0,
-      "value": "Rejse"
+      "value": "Journey"
     }
   ],
   "label.journey-description": [
     {
       "type": 0,
-      "value": "Forstå hvordan brugere navigerer på din hjemmeside."
-    }
-  ],
-  "label.journeys": [
-    {
-      "type": 0,
-      "value": "Rejser"
+      "value": "Understand how users navigate through your website."
     }
   ],
   "label.language": [
@@ -783,12 +609,6 @@
     {
       "type": 0,
       "value": "Laptop"
-    }
-  ],
-  "label.last-click": [
-    {
-      "type": 0,
-      "value": "Sidste klik"
     }
   ],
   "label.last-days": [
@@ -822,7 +642,7 @@
   "label.last-months": [
     {
       "type": 0,
-      "value": "Sidste "
+      "value": "Last "
     },
     {
       "type": 1,
@@ -830,43 +650,37 @@
     },
     {
       "type": 0,
-      "value": " måneder"
+      "value": " months"
     }
   ],
   "label.last-seen": [
     {
       "type": 0,
-      "value": "Sidst set"
+      "value": "Last seen"
     }
   ],
   "label.leave": [
     {
       "type": 0,
-      "value": "Forlad"
+      "value": "Leave"
     }
   ],
   "label.leave-team": [
     {
       "type": 0,
-      "value": "Forlad team"
+      "value": "Leave team"
     }
   ],
   "label.less-than": [
     {
       "type": 0,
-      "value": "Mindre end"
+      "value": "Less than"
     }
   ],
   "label.less-than-equals": [
     {
       "type": 0,
-      "value": "Mindre end eller lig med"
-    }
-  ],
-  "label.links": [
-    {
-      "type": 0,
-      "value": "Links"
+      "value": "Less than or equals"
     }
   ],
   "label.login": [
@@ -884,43 +698,31 @@
   "label.manage": [
     {
       "type": 0,
-      "value": "Administrer"
+      "value": "Manage"
     }
   ],
   "label.manager": [
     {
       "type": 0,
-      "value": "Leder"
+      "value": "Manager"
     }
   ],
   "label.max": [
     {
       "type": 0,
-      "value": "Maks"
-    }
-  ],
-  "label.maximize": [
-    {
-      "type": 0,
-      "value": "Udvid"
-    }
-  ],
-  "label.medium": [
-    {
-      "type": 0,
-      "value": "Medium"
+      "value": "Max"
     }
   ],
   "label.member": [
     {
       "type": 0,
-      "value": "Medlem"
+      "value": "Member"
     }
   ],
   "label.members": [
     {
       "type": 0,
-      "value": "Medlemmer"
+      "value": "Members"
     }
   ],
   "label.min": [
@@ -935,12 +737,6 @@
       "value": "Mobil"
     }
   ],
-  "label.model": [
-    {
-      "type": 0,
-      "value": "Model"
-    }
-  ],
   "label.more": [
     {
       "type": 0,
@@ -950,13 +746,13 @@
   "label.my-account": [
     {
       "type": 0,
-      "value": "Min konto"
+      "value": "My account"
     }
   ],
   "label.my-websites": [
     {
       "type": 0,
-      "value": "Mine hjemmesider"
+      "value": "My websites"
     }
   ],
   "label.name": [
@@ -974,7 +770,7 @@
   "label.none": [
     {
       "type": 0,
-      "value": "Ingen"
+      "value": "None"
     }
   ],
   "label.number-of-records": [
@@ -993,7 +789,7 @@
           "value": [
             {
               "type": 0,
-              "value": "post"
+              "value": "record"
             }
           ]
         },
@@ -1001,7 +797,7 @@
           "value": [
             {
               "type": 0,
-              "value": "poster"
+              "value": "records"
             }
           ]
         }
@@ -1017,52 +813,16 @@
       "value": "OK"
     }
   ],
-  "label.online": [
-    {
-      "type": 0,
-      "value": "Online"
-    }
-  ],
-  "label.organic-search": [
-    {
-      "type": 0,
-      "value": "Organisk søgning"
-    }
-  ],
-  "label.organic-shopping": [
-    {
-      "type": 0,
-      "value": "Organisk shopping"
-    }
-  ],
-  "label.organic-social": [
-    {
-      "type": 0,
-      "value": "Organisk social"
-    }
-  ],
-  "label.organic-video": [
-    {
-      "type": 0,
-      "value": "Organisk video"
-    }
-  ],
   "label.os": [
     {
       "type": 0,
       "value": "OS"
     }
   ],
-  "label.other": [
-    {
-      "type": 0,
-      "value": "Andet"
-    }
-  ],
   "label.overview": [
     {
       "type": 0,
-      "value": "Oversigt"
+      "value": "Overview"
     }
   ],
   "label.owner": [
@@ -1071,16 +831,10 @@
       "value": "Ejer"
     }
   ],
-  "label.page": [
-    {
-      "type": 0,
-      "value": "Side"
-    }
-  ],
   "label.page-of": [
     {
       "type": 0,
-      "value": "Side "
+      "value": "Page "
     },
     {
       "type": 1,
@@ -1088,7 +842,7 @@
     },
     {
       "type": 0,
-      "value": " af "
+      "value": " of "
     },
     {
       "type": 1,
@@ -1104,43 +858,13 @@
   "label.pageTitle": [
     {
       "type": 0,
-      "value": "Sidetitel"
+      "value": "Page title"
     }
   ],
   "label.pages": [
     {
       "type": 0,
       "value": "Sider"
-    }
-  ],
-  "label.paid-ads": [
-    {
-      "type": 0,
-      "value": "Betalte annoncer"
-    }
-  ],
-  "label.paid-search": [
-    {
-      "type": 0,
-      "value": "Betalt søgning"
-    }
-  ],
-  "label.paid-shopping": [
-    {
-      "type": 0,
-      "value": "Betalt shopping"
-    }
-  ],
-  "label.paid-social": [
-    {
-      "type": 0,
-      "value": "Betalt social"
-    }
-  ],
-  "label.paid-video": [
-    {
-      "type": 0,
-      "value": "Betalt video"
     }
   ],
   "label.password": [
@@ -1152,19 +876,13 @@
   "label.path": [
     {
       "type": 0,
-      "value": "Sti"
+      "value": "Path"
     }
   ],
   "label.paths": [
     {
       "type": 0,
-      "value": "Stier"
-    }
-  ],
-  "label.pixels": [
-    {
-      "type": 0,
-      "value": "Pixels"
+      "value": "Paths"
     }
   ],
   "label.powered-by": [
@@ -1204,31 +922,31 @@
   "label.properties": [
     {
       "type": 0,
-      "value": "Egenskaber"
+      "value": "Properties"
     }
   ],
   "label.property": [
     {
       "type": 0,
-      "value": "Egenskab"
+      "value": "Property"
     }
   ],
   "label.queries": [
     {
       "type": 0,
-      "value": "Forespørgsler"
+      "value": "Queries"
     }
   ],
   "label.query": [
     {
       "type": 0,
-      "value": "Forespørgsel"
+      "value": "Query"
     }
   ],
   "label.query-parameters": [
     {
       "type": 0,
-      "value": "Forespørgselsparametre"
+      "value": "Query parameters"
     }
   ],
   "label.realtime": [
@@ -1237,16 +955,10 @@
       "value": "Realtid"
     }
   ],
-  "label.referral": [
-    {
-      "type": 0,
-      "value": "Henvisning"
-    }
-  ],
   "label.referrer": [
     {
       "type": 0,
-      "value": "Henviser"
+      "value": "Referrer"
     }
   ],
   "label.referrers": [
@@ -1264,7 +976,7 @@
   "label.regenerate": [
     {
       "type": 0,
-      "value": "Gendan"
+      "value": "Regenerate"
     }
   ],
   "label.region": [
@@ -1276,31 +988,25 @@
   "label.regions": [
     {
       "type": 0,
-      "value": "Regioner"
-    }
-  ],
-  "label.remaining": [
-    {
-      "type": 0,
-      "value": "Tilbageværende"
+      "value": "Regions"
     }
   ],
   "label.remove": [
     {
       "type": 0,
-      "value": "Fjern"
+      "value": "Remove"
     }
   ],
   "label.remove-member": [
     {
       "type": 0,
-      "value": "Fjern medlem"
+      "value": "Remove member"
     }
   ],
   "label.reports": [
     {
       "type": 0,
-      "value": "Rapporter"
+      "value": "Reports"
     }
   ],
   "label.required": [
@@ -1318,43 +1024,49 @@
   "label.reset-website": [
     {
       "type": 0,
-      "value": "Nulstil statistik"
+      "value": "Nulstil statistikker"
     }
   ],
   "label.retention": [
     {
       "type": 0,
-      "value": "Fastholdelse"
+      "value": "Retention"
     }
   ],
   "label.retention-description": [
     {
       "type": 0,
-      "value": "Mål hvor ofte brugere vender tilbage til din hjemmeside."
+      "value": "Measure your website stickiness by tracking how often users return."
     }
   ],
   "label.revenue": [
     {
       "type": 0,
-      "value": "Indtægt"
+      "value": "Revenue"
     }
   ],
   "label.revenue-description": [
     {
       "type": 0,
-      "value": "Se din indtægt over tid."
+      "value": "Look into your revenue across time."
+    }
+  ],
+  "label.revenue-property": [
+    {
+      "type": 0,
+      "value": "Revenue Property"
     }
   ],
   "label.role": [
     {
       "type": 0,
-      "value": "Rolle"
+      "value": "Role"
     }
   ],
   "label.run-query": [
     {
       "type": 0,
-      "value": "Kør forespørgsel"
+      "value": "Run query"
     }
   ],
   "label.save": [
@@ -1366,43 +1078,37 @@
   "label.screens": [
     {
       "type": 0,
-      "value": "Skærme"
+      "value": "Screens"
     }
   ],
   "label.search": [
     {
       "type": 0,
-      "value": "Søg"
+      "value": "Search"
     }
   ],
   "label.select": [
     {
       "type": 0,
-      "value": "Vælg"
+      "value": "Select"
     }
   ],
   "label.select-date": [
     {
       "type": 0,
-      "value": "Vælg dato"
-    }
-  ],
-  "label.select-filter": [
-    {
-      "type": 0,
-      "value": "Vælg filter"
+      "value": "Select date"
     }
   ],
   "label.select-role": [
     {
       "type": 0,
-      "value": "Vælg rolle"
+      "value": "Select role"
     }
   ],
   "label.select-website": [
     {
       "type": 0,
-      "value": "Vælg hjemmeside"
+      "value": "Select website"
     }
   ],
   "label.session": [
@@ -1411,28 +1117,16 @@
       "value": "Session"
     }
   ],
-  "label.session-data": [
-    {
-      "type": 0,
-      "value": "Sessionsdata"
-    }
-  ],
   "label.sessions": [
     {
       "type": 0,
-      "value": "Sessioner"
+      "value": "Sessions"
     }
   ],
   "label.settings": [
     {
       "type": 0,
       "value": "Indstillinger"
-    }
-  ],
-  "label.share": [
-    {
-      "type": 0,
-      "value": "Del"
     }
   ],
   "label.share-url": [
@@ -1447,28 +1141,16 @@
       "value": "Enkelt dag"
     }
   ],
-  "label.sms": [
-    {
-      "type": 0,
-      "value": "SMS"
-    }
-  ],
-  "label.sources": [
-    {
-      "type": 0,
-      "value": "Kilder"
-    }
-  ],
   "label.start-step": [
     {
       "type": 0,
-      "value": "Starttrin"
+      "value": "Start Step"
     }
   ],
   "label.steps": [
     {
       "type": 0,
-      "value": "Trin"
+      "value": "Steps"
     }
   ],
   "label.sum": [
@@ -1481,18 +1163,6 @@
     {
       "type": 0,
       "value": "Tablet"
-    }
-  ],
-  "label.tag": [
-    {
-      "type": 0,
-      "value": "Tag"
-    }
-  ],
-  "label.tags": [
-    {
-      "type": 0,
-      "value": "Tags"
     }
   ],
   "label.team": [
@@ -1510,55 +1180,43 @@
   "label.team-manager": [
     {
       "type": 0,
-      "value": "Teamleder"
+      "value": "Team manager"
     }
   ],
   "label.team-member": [
     {
       "type": 0,
-      "value": "Teammedlem"
+      "value": "Team member"
     }
   ],
   "label.team-name": [
     {
       "type": 0,
-      "value": "Teamnavn"
+      "value": "Team name"
     }
   ],
   "label.team-owner": [
     {
       "type": 0,
-      "value": "Teamejer"
-    }
-  ],
-  "label.team-settings": [
-    {
-      "type": 0,
-      "value": "Teamindstillinger"
+      "value": "Team owner"
     }
   ],
   "label.team-view-only": [
     {
       "type": 0,
-      "value": "Kun visning af team"
+      "value": "Team view only"
     }
   ],
   "label.team-websites": [
     {
       "type": 0,
-      "value": "Teamets hjemmesider"
+      "value": "Team websites"
     }
   ],
   "label.teams": [
     {
       "type": 0,
       "value": "Teams"
-    }
-  ],
-  "label.terms": [
-    {
-      "type": 0,
-      "value": "Vilkår"
     }
   ],
   "label.theme": [
@@ -1693,10 +1351,28 @@
       "value": "Update"
     }
   ],
+  "label.url": [
+    {
+      "type": 0,
+      "value": "URL"
+    }
+  ],
+  "label.urls": [
+    {
+      "type": 0,
+      "value": "URLs"
+    }
+  ],
   "label.user": [
     {
       "type": 0,
       "value": "User"
+    }
+  ],
+  "label.user-property": [
+    {
+      "type": 0,
+      "value": "User Property"
     }
   ],
   "label.username": [
@@ -1855,12 +1531,6 @@
       "value": "x"
     }
   ],
-  "message.bad-request": [
-    {
-      "type": 0,
-      "value": "Bad request"
-    }
-  ],
   "message.collected-data": [
     {
       "type": 0,
@@ -1953,12 +1623,6 @@
     {
       "type": 1,
       "value": "url"
-    }
-  ],
-  "message.forbidden": [
-    {
-      "type": 0,
-      "value": "Forbidden"
     }
   ],
   "message.go-to-settings": [
@@ -2055,18 +1719,6 @@
       "value": "Du har ikke konfigureret nogen hjemmesider."
     }
   ],
-  "message.not-found": [
-    {
-      "type": 0,
-      "value": "Not found"
-    }
-  ],
-  "message.nothing-selected": [
-    {
-      "type": 0,
-      "value": "Nothing selected."
-    }
-  ],
   "message.page-not-found": [
     {
       "type": 0,
@@ -2097,12 +1749,6 @@
     {
       "type": 0,
       "value": "Gemt!"
-    }
-  ],
-  "message.sever-error": [
-    {
-      "type": 0,
-      "value": "Server error"
     }
   ],
   "message.share-url": [
@@ -2167,12 +1813,6 @@
       "value": "Triggered event"
     }
   ],
-  "message.unauthorized": [
-    {
-      "type": 0,
-      "value": "Unauthorized"
-    }
-  ],
   "message.user-deleted": [
     {
       "type": 0,
@@ -2217,6 +1857,12 @@
     {
       "type": 1,
       "value": "device"
+    }
+  ],
+  "message.visitors-dropped-off": [
+    {
+      "type": 0,
+      "value": "Visitors dropped off"
     }
   ]
 }

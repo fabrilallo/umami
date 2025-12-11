@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
-import { LOCALE_CONFIG } from '@/lib/constants';
 import { httpGet } from '@/lib/fetch';
-import { getDateLocale, getTextDirection } from '@/lib/lang';
 import { setItem } from '@/lib/storage';
-import { setLocale, useApp } from '@/store/app';
-import enUS from '../../../public/intl/country/en-US.json';
+import { LOCALE_CONFIG } from '@/lib/constants';
+import { getDateLocale, getTextDirection } from '@/lib/lang';
+import useStore, { setLocale } from '@/store/app';
 import { useForceUpdate } from './useForceUpdate';
+import enUS from '../../../public/intl/country/en-US.json';
 
 const messages = {
   'en-US': enUS,
 };
 
-const selector = (state: { locale: string }) => state.locale;
+const selector = (state: { locale: any }) => state.locale;
 
 export function useLocale() {
-  const locale = useApp(selector);
+  const locale = useStore(selector);
   const forceUpdate = useForceUpdate();
   const dir = getTextDirection(locale);
   const dateLocale = getDateLocale(locale);
@@ -58,3 +58,5 @@ export function useLocale() {
 
   return { locale, saveLocale, messages, dir, dateLocale };
 }
+
+export default useLocale;

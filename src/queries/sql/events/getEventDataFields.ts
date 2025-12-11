@@ -1,11 +1,11 @@
+import prisma from '@/lib/prisma';
 import clickhouse from '@/lib/clickhouse';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
-import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
+import { QueryFilters, WebsiteEventData } from '@/lib/types';
 
-const FUNCTION_NAME = 'getEventDataFields';
-
-export async function getEventDataFields(...args: [websiteId: string, filters: QueryFilters]) {
+export async function getEventDataFields(
+  ...args: [websiteId: string, filters: QueryFilters]
+): Promise<WebsiteEventData[]> {
   return runQuery({
     [PRISMA]: () => relationalQuery(...args),
     [CLICKHOUSE]: () => clickhouseQuery(...args),
@@ -14,10 +14,7 @@ export async function getEventDataFields(...args: [websiteId: string, filters: Q
 
 async function relationalQuery(websiteId: string, filters: QueryFilters) {
   const { rawQuery, parseFilters, getDateSQL } = prisma;
-  const { filterQuery, cohortQuery, joinSessionQuery, queryParams } = parseFilters({
-    ...filters,
-    websiteId,
-  });
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -35,7 +32,6 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
       and website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
     ${cohortQuery}
-    ${joinSessionQuery}
     where event_data.website_id = {{websiteId::uuid}}
       and event_data.created_at between {{startDate}} and {{endDate}}
     ${filterQuery}
@@ -43,8 +39,7 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
     order by 2 desc
     limit 100
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
@@ -53,7 +48,7 @@ async function clickhouseQuery(
   filters: QueryFilters,
 ): Promise<{ propertyName: string; dataType: number; propertyValue: string; total: number }[]> {
   const { rawQuery, parseFilters } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({ ...filters, websiteId });
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, filters);
 
   return rawQuery(
     `
@@ -64,21 +59,15 @@ async function clickhouseQuery(
               data_type = 4, toString(date_trunc('hour', date_value)),
               string_value) as "value",
       count(*) as "total"
-    from event_data
-    join website_event
-    on website_event.event_id = event_data.event_id
-      and website_event.website_id = event_data.website_id
-      and website_event.website_id = {websiteId:UUID}
-      and website_event.created_at between {startDate:DateTime64} and {endDate:DateTime64}
+    from event_data website_event
     ${cohortQuery}
-    where event_data.website_id = {websiteId:UUID}
-      and event_data.created_at between {startDate:DateTime64} and {endDate:DateTime64}
+    where website_id = {websiteId:UUID}
+      and created_at between {startDate:DateTime64} and {endDate:DateTime64}
     ${filterQuery}
     group by data_key, data_type, value
     order by 2 desc
     limit 100
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }

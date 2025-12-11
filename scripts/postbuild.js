@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { sendTelemetry } from './telemetry.js';
+require('dotenv').config();
+const { sendTelemetry } = require('./telemetry');
 
 async function run() {
   if (!process.env.DISABLE_TELEMETRY) {

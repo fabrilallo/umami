@@ -1,6 +1,6 @@
-import { produce } from 'immer';
 import { create } from 'zustand';
-import type { DateRange } from '@/lib/types';
+import { produce } from 'immer';
+import { DateRange } from '@/lib/types';
 
 const store = create(() => ({}));
 
@@ -32,4 +32,4 @@ export function setWebsiteDateCompare(websiteId: string, dateCompare: string) {
   );
 }
 
-export const useWebsites = store;
+export default store;

@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { canDeleteWebsite, canUpdateWebsite, canViewWebsite } from '@/lib/auth';
 import { parseRequest } from '@/lib/request';
 import { json, notFound, ok, unauthorized } from '@/lib/response';
-import { anyObjectParam, segmentTypeParam } from '@/lib/schema';
-import { canDeleteWebsite, canUpdateWebsite, canViewWebsite } from '@/permissions';
-import { deleteSegment, getSegment, updateSegment } from '@/queries/prisma';
+import { segmentTypeParam } from '@/lib/schema';
+import { deleteSegment, getSegment, updateSegment } from '@/queries';
+import { z } from 'zod';
 
 export async function GET(
   request: Request,
@@ -33,7 +33,7 @@ export async function POST(
   const schema = z.object({
     type: segmentTypeParam,
     name: z.string().max(200),
-    parameters: anyObjectParam,
+    parameters: z.object({}).passthrough(),
   });
 
   const { auth, body, error } = await parseRequest(request, schema);

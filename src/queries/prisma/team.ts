@@ -1,32 +1,28 @@
-import { Prisma, type Team } from '@/generated/prisma/client';
+import { Prisma, Team } from '@prisma/client';
 import { ROLES } from '@/lib/constants';
 import { uuid } from '@/lib/crypto';
 import prisma from '@/lib/prisma';
-import type { PageResult, QueryFilters } from '@/lib/types';
-
+import { PageResult, PageParams } from '@/lib/types';
 import TeamFindManyArgs = Prisma.TeamFindManyArgs;
 
 export async function findTeam(criteria: Prisma.TeamFindUniqueArgs): Promise<Team> {
   return prisma.client.team.findUnique(criteria);
 }
 
-export async function getTeam(
-  teamId: string,
-  options: { includeMembers?: boolean } = {},
-): Promise<Team> {
+export async function getTeam(teamId: string, options: { includeMembers?: boolean } = {}) {
   const { includeMembers } = options;
 
   return findTeam({
     where: {
       id: teamId,
     },
-    ...(includeMembers && { include: { members: true } }),
+    ...(includeMembers && { include: { teamUser: true } }),
   });
 }
 
 export async function getTeams(
   criteria: TeamFindManyArgs,
-  filters: QueryFilters,
+  filters: PageParams = {},
 ): Promise<PageResult<Team[]>> {
   const { getSearchParameters } = prisma;
   const { search } = filters;
@@ -46,17 +42,17 @@ export async function getTeams(
   );
 }
 
-export async function getUserTeams(userId: string, filters: QueryFilters = {}) {
+export async function getUserTeams(userId: string, filters: PageParams = {}) {
   return getTeams(
     {
       where: {
         deletedAt: null,
-        members: {
+        teamUser: {
           some: { userId },
         },
       },
       include: {
-        members: {
+        teamUser: {
           include: {
             user: {
               select: {
@@ -68,10 +64,10 @@ export async function getUserTeams(userId: string, filters: QueryFilters = {}) {
         },
         _count: {
           select: {
-            websites: {
+            website: {
               where: { deletedAt: null },
             },
-            members: {
+            teamUser: {
               where: {
                 user: { deletedAt: null },
               },
@@ -82,22 +78,6 @@ export async function getUserTeams(userId: string, filters: QueryFilters = {}) {
     },
     filters,
   );
-}
-
-export async function getAllUserTeams(userId: string) {
-  return prisma.client.team.findMany({
-    where: {
-      deletedAt: null,
-      members: {
-        some: { userId },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      logoUrl: true,
-    },
-  });
 }
 
 export async function createTeam(data: Prisma.TeamCreateInput, userId: string): Promise<any> {
@@ -133,9 +113,11 @@ export async function updateTeam(teamId: string, data: Prisma.TeamUpdateInput): 
   });
 }
 
-export async function deleteTeam(teamId: string) {
+export async function deleteTeam(
+  teamId: string,
+): Promise<Promise<[Prisma.BatchPayload, Prisma.BatchPayload, Team]>> {
   const { client, transaction } = prisma;
-  const cloudMode = !!process.env.CLOUD_MODE;
+  const cloudMode = process.env.CLOUD_MODE;
 
   if (cloudMode) {
     return transaction([

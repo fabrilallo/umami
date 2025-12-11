@@ -1,11 +1,10 @@
-import path from 'node:path';
-import del from 'del';
-import fs from 'fs-extra';
-import { createRequire } from 'module';
+const fs = require('fs-extra');
+const path = require('path');
+const del = require('del');
+const prettier = require('prettier');
 
-const require = createRequire(import.meta.url);
-const src = path.resolve(process.cwd(), 'src/lang');
-const dest = path.resolve(process.cwd(), 'build/messages');
+const src = path.resolve(__dirname, '../src/lang');
+const dest = path.resolve(__dirname, '../build/messages');
 const files = fs.readdirSync(src);
 
 del.sync([path.join(dest)]);
@@ -18,7 +17,7 @@ async function run() {
   await fs.ensureDir(dest);
 
   files.forEach(file => {
-    const lang = require(path.resolve(process.cwd(), `src/lang/${file}`));
+    const lang = require(`../src/lang/${file}`);
     const keys = Object.keys(lang).sort();
 
     const formatted = keys.reduce((obj, key) => {
@@ -26,7 +25,7 @@ async function run() {
       return obj;
     }, {});
 
-    const json = JSON.stringify(formatted, null, 2);
+    const json = prettier.format(JSON.stringify(formatted), { parser: 'json' });
 
     fs.writeFileSync(path.resolve(dest, file), json);
   });

@@ -1,15 +1,15 @@
 import { z } from 'zod';
 import { uuid } from '@/lib/crypto';
+import { pagingParams, reportTypeParam } from '@/lib/schema';
 import { parseRequest } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { pagingParams, reportSchema, reportTypeParam } from '@/lib/schema';
-import { canUpdateWebsite, canViewWebsite } from '@/permissions';
-import { createReport, getReports } from '@/queries/prisma';
+import { canViewTeam, canViewWebsite, canUpdateWebsite } from '@/lib/auth';
+import { unauthorized, json } from '@/lib/response';
+import { getReports, createReport } from '@/queries';
 
 export async function GET(request: Request) {
   const schema = z.object({
-    websiteId: z.uuid(),
-    type: reportTypeParam.optional(),
+    websiteId: z.string().uuid().optional(),
+    teamId: z.string().uuid().optional(),
     ...pagingParams,
   });
 
@@ -19,24 +19,53 @@ export async function GET(request: Request) {
     return error();
   }
 
-  const { page, search, pageSize, websiteId, type } = query;
+  const { page, search, pageSize, websiteId, teamId } = query;
+  const userId = auth.user.id;
   const filters = {
     page,
     pageSize,
     search,
   };
 
-  if (!(await canViewWebsite(auth, websiteId))) {
+  if (
+    (websiteId && !(await canViewWebsite(auth, websiteId))) ||
+    (teamId && !(await canViewTeam(auth, teamId)))
+  ) {
     return unauthorized();
   }
 
   const data = await getReports(
     {
       where: {
-        websiteId,
-        type,
+        OR: [
+          ...(websiteId ? [{ websiteId }] : []),
+          ...(teamId
+            ? [
+                {
+                  website: {
+                    deletedAt: null,
+                    teamId,
+                  },
+                },
+              ]
+            : []),
+          ...(userId && !websiteId && !teamId
+            ? [
+                {
+                  website: {
+                    deletedAt: null,
+                    userId,
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+      include: {
         website: {
-          deletedAt: null,
+          select: {
+            domain: true,
+          },
         },
       },
     },
@@ -47,7 +76,15 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { auth, body, error } = await parseRequest(request, reportSchema);
+  const schema = z.object({
+    websiteId: z.string().uuid(),
+    name: z.string().max(200),
+    type: reportTypeParam,
+    description: z.string().max(500),
+    parameters: z.object({}).passthrough(),
+  });
+
+  const { auth, body, error } = await parseRequest(request, schema);
 
   if (error) {
     return error();
@@ -65,9 +102,9 @@ export async function POST(request: Request) {
     websiteId,
     type,
     name,
-    description: description || '',
-    parameters,
-  });
+    description,
+    parameters: parameters,
+  } as any);
 
   return json(result);
 }

@@ -1,7 +1,8 @@
-import { StatusLight, Text } from '@umami/react-zen';
 import { useMemo } from 'react';
-import { LinkButton } from '@/components/common/LinkButton';
-import { useActyiveUsersQuery, useMessages } from '@/components/hooks';
+import { StatusLight } from 'react-basics';
+import { useApi } from '@/components/hooks';
+import { useMessages } from '@/components/hooks';
+import styles from './ActiveUsers.module.css';
 
 export function ActiveUsers({
   websiteId,
@@ -12,8 +13,14 @@ export function ActiveUsers({
   value?: number;
   refetchInterval?: number;
 }) {
-  const { formatMessage, labels } = useMessages();
-  const { data } = useActyiveUsersQuery(websiteId, { refetchInterval });
+  const { formatMessage, messages } = useMessages();
+  const { get, useQuery } = useApi();
+  const { data } = useQuery({
+    queryKey: ['websites:active', websiteId],
+    queryFn: () => get(`/websites/${websiteId}/active`),
+    enabled: !!websiteId,
+    refetchInterval,
+  });
 
   const count = useMemo(() => {
     if (websiteId) {
@@ -28,12 +35,10 @@ export function ActiveUsers({
   }
 
   return (
-    <LinkButton href={`/websites/${websiteId}/realtime`} variant="quiet">
-      <StatusLight variant="success">
-        <Text size="2" weight="medium">
-          {count} {formatMessage(labels.online)}
-        </Text>
-      </StatusLight>
-    </LinkButton>
+    <StatusLight className={styles.container} variant="success">
+      <div className={styles.text}>{formatMessage(messages.activeUsers, { x: count })}</div>
+    </StatusLight>
   );
 }
+
+export default ActiveUsers;

@@ -1,15 +1,17 @@
 import { z } from 'zod';
-import { ROLES } from '@/lib/constants';
 import { parseRequest } from '@/lib/request';
 import { json, unauthorized } from '@/lib/response';
-import { pagingParams, searchParams } from '@/lib/schema';
-import { canViewAllWebsites } from '@/permissions';
+import { pagingParams } from '@/lib/schema';
+import { canViewAllWebsites } from '@/lib/auth';
 import { getWebsites } from '@/queries/prisma/website';
+import { ROLES } from '@/lib/constants';
 
 export async function GET(request: Request) {
   const schema = z.object({
+    userId: z.string().uuid(),
+    includeOwnedTeams: z.string().optional(),
+    includeAllTeams: z.string().optional(),
     ...pagingParams,
-    ...searchParams,
   });
 
   const { auth, query, error } = await parseRequest(request, schema);
@@ -22,13 +24,46 @@ export async function GET(request: Request) {
     return unauthorized();
   }
 
+  const { userId, includeOwnedTeams, includeAllTeams } = query;
+
   const websites = await getWebsites(
     {
+      where: {
+        OR: [
+          ...(userId && [{ userId }]),
+          ...(userId && includeOwnedTeams
+            ? [
+                {
+                  team: {
+                    deletedAt: null,
+                    teamUser: {
+                      some: {
+                        role: ROLES.teamOwner,
+                        userId,
+                      },
+                    },
+                  },
+                },
+              ]
+            : []),
+          ...(userId && includeAllTeams
+            ? [
+                {
+                  team: {
+                    deletedAt: null,
+                    teamUser: {
+                      some: {
+                        userId,
+                      },
+                    },
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
       include: {
         user: {
-          where: {
-            deletedAt: null,
-          },
           select: {
             username: true,
             id: true,
@@ -39,16 +74,13 @@ export async function GET(request: Request) {
             deletedAt: null,
           },
           include: {
-            members: {
+            teamUser: {
               where: {
                 role: ROLES.teamOwner,
               },
             },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     },
     query,

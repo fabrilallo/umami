@@ -1,36 +1,42 @@
-import { Dialog, ListItem, ListSeparator, Modal, Select, type SelectProps } from '@umami/react-zen';
-import { endOfYear } from 'date-fns';
-import { Fragment, type Key, useState } from 'react';
-import { DateDisplay } from '@/components/common/DateDisplay';
-import { useMessages, useMobile } from '@/components/hooks';
-import { DatePickerForm } from '@/components/metrics/DatePickerForm';
-import { parseDateRange } from '@/lib/date';
+import { useState } from 'react';
+import { Icon, Modal, Dropdown, Item, Text, Flexbox } from 'react-basics';
+import { endOfYear, isSameDay } from 'date-fns';
+import DatePickerForm from '@/components/metrics/DatePickerForm';
+import { useLocale, useMessages } from '@/components/hooks';
+import Icons from '@/components/icons';
+import { formatDate, parseDateValue } from '@/lib/date';
+import styles from './DateFilter.module.css';
+import classNames from 'classnames';
 
-export interface DateFilterProps extends SelectProps {
-  value?: string;
+export interface DateFilterProps {
+  value: string;
+  startDate: Date;
+  endDate: Date;
+  offset?: number;
+  className?: string;
   onChange?: (value: string) => void;
   showAllTime?: boolean;
-  renderDate?: boolean;
-  placement?: any;
+  alignment?: 'start' | 'center' | 'end';
 }
 
 export function DateFilter({
+  startDate,
+  endDate,
   value,
+  offset = 0,
+  className,
   onChange,
-  showAllTime,
-  renderDate,
-  placement = 'bottom',
-  ...props
+  showAllTime = false,
+  alignment = 'end',
 }: DateFilterProps) {
   const { formatMessage, labels } = useMessages();
   const [showPicker, setShowPicker] = useState(false);
-  const { startDate, endDate } = parseDateRange(value) || {};
-  const { isMobile } = useMobile();
+  const { locale } = useLocale();
 
   const options = [
     { label: formatMessage(labels.today), value: '0day' },
     {
-      label: formatMessage(labels.lastHours, { x: '24' }),
+      label: formatMessage(labels.lastHours, { x: 24 }),
       value: '24hour',
     },
     {
@@ -39,7 +45,7 @@ export function DateFilter({
       divider: true,
     },
     {
-      label: formatMessage(labels.lastDays, { x: '7' }),
+      label: formatMessage(labels.lastDays, { x: 7 }),
       value: '7day',
     },
     {
@@ -48,21 +54,20 @@ export function DateFilter({
       divider: true,
     },
     {
-      label: formatMessage(labels.lastDays, { x: '30' }),
+      label: formatMessage(labels.lastDays, { x: 30 }),
       value: '30day',
     },
     {
-      label: formatMessage(labels.lastDays, { x: '90' }),
+      label: formatMessage(labels.lastDays, { x: 90 }),
       value: '90day',
     },
-    { label: formatMessage(labels.thisYear), value: '0year' },
+    { label: formatMessage(labels.thisYear), value: '0year', divider: true },
     {
-      label: formatMessage(labels.lastMonths, { x: '6' }),
+      label: formatMessage(labels.lastMonths, { x: 6 }),
       value: '6month',
-      divider: true,
     },
     {
-      label: formatMessage(labels.lastMonths, { x: '12' }),
+      label: formatMessage(labels.lastMonths, { x: 12 }),
       value: '12month',
     },
     showAllTime && {
@@ -75,67 +80,109 @@ export function DateFilter({
       value: 'custom',
       divider: true,
     },
-  ]
-    .filter(n => n)
-    .map((a, id) => ({ ...a, id }));
+  ].filter(n => n);
 
-  const handleChange = (value: Key) => {
+  const handleChange = (value: string) => {
     if (value === 'custom') {
       setShowPicker(true);
       return;
     }
-    onChange(value.toString());
+    onChange(value);
   };
 
   const handlePickerChange = (value: string) => {
     setShowPicker(false);
-    onChange(value.toString());
+    onChange(value);
   };
 
-  const renderValue = ({ defaultChildren }) => {
-    return value?.startsWith('range') || renderDate ? (
-      <DateDisplay startDate={startDate} endDate={endDate} />
-    ) : (
-      defaultChildren
-    );
-  };
+  const handleClose = () => setShowPicker(false);
 
-  const selectedValue = value.endsWith(':all') ? 'all' : value;
+  const renderValue = (value: string) => {
+    const { unit } = parseDateValue(value) || {};
+
+    if (offset && unit === 'year') {
+      return formatDate(startDate, 'yyyy', locale);
+    }
+
+    if (offset && unit === 'month') {
+      return formatDate(startDate, 'MMMM yyyy', locale);
+    }
+
+    if (value.startsWith('range') || offset) {
+      return (
+        <CustomRange
+          startDate={startDate}
+          endDate={endDate}
+          unit={unit}
+          onClick={() => handleChange('custom')}
+        />
+      );
+    }
+
+    return options.find(e => e.value === value)?.label;
+  };
 
   return (
     <>
-      <Select
-        {...props}
-        value={selectedValue}
-        placeholder={formatMessage(labels.selectDate)}
-        onChange={handleChange}
+      <Dropdown
+        className={classNames(className, styles.dropdown)}
+        items={options}
         renderValue={renderValue}
-        popoverProps={{ placement }}
-        isFullscreen={isMobile}
+        value={value}
+        alignment={alignment}
+        placeholder={formatMessage(labels.selectDate)}
+        onChange={key => handleChange(key as any)}
       >
-        {options.map(({ label, value, divider }: any) => {
-          return (
-            <Fragment key={label}>
-              {divider && <ListSeparator />}
-              <ListItem id={value}>{label}</ListItem>
-            </Fragment>
-          );
-        })}
-      </Select>
+        {({ label, value, divider }) => (
+          <Item key={value} divider={divider}>
+            {label}
+          </Item>
+        )}
+      </Dropdown>
       {showPicker && (
-        <Modal isOpen={true}>
-          <Dialog>
-            <DatePickerForm
-              startDate={startDate}
-              endDate={endDate}
-              minDate={new Date(2000, 0, 1)}
-              maxDate={endOfYear(new Date())}
-              onChange={handlePickerChange}
-              onClose={() => setShowPicker(false)}
-            />
-          </Dialog>
+        <Modal onClose={handleClose}>
+          <DatePickerForm
+            startDate={startDate}
+            endDate={endDate}
+            minDate={new Date(2000, 0, 1)}
+            maxDate={endOfYear(new Date())}
+            onChange={handlePickerChange}
+            onClose={() => setShowPicker(false)}
+          />
         </Modal>
       )}
     </>
   );
 }
+
+const CustomRange = ({ startDate, endDate, unit, onClick }) => {
+  const { locale } = useLocale();
+
+  const monthFormat = unit === 'month';
+
+  function handleClick(e) {
+    e.stopPropagation();
+
+    onClick();
+  }
+
+  return (
+    <Flexbox gap={10} alignItems="center" wrap="nowrap">
+      <Icon className="mr-2" onClick={handleClick}>
+        <Icons.Calendar />
+      </Icon>
+      <Text>
+        {monthFormat ? (
+          <>{formatDate(startDate, 'MMMM yyyy', locale)}</>
+        ) : (
+          <>
+            {formatDate(startDate, 'd LLL y', locale)}
+            {!isSameDay(startDate, endDate) && ` — ${formatDate(endDate, 'd LLL y', locale)}`}
+          </>
+        )}
+      </Text>
+    </Flexbox>
+  );
+};
+
+export default DateFilter;

@@ -1,12 +1,11 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { Providers } from './Providers';
+import { Metadata } from 'next';
+import Providers from './Providers';
 import '@fontsource/inter/300.css';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/700.css';
-import '@umami/react-zen/styles.css';
-import '@/styles/global.css';
+import 'react-basics/dist/styles.css';
+import '@/styles/index.css';
 import '@/styles/variables.css';
 
 export default function ({ children }) {
@@ -19,7 +18,7 @@ export default function ({ children }) {
   }
 
   return (
-    <html lang="en">
+    <html lang="en" data-scroll="0">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -32,10 +31,8 @@ export default function ({ children }) {
         <meta name="theme-color" content="#2f2f2f" media="(prefers-color-scheme: dark)" />
         <meta name="robots" content="noindex,nofollow" />
       </head>
-      <body>
-        <Suspense>
-          <Providers>{children}</Providers>
-        </Suspense>
+      <body suppressHydrationWarning>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

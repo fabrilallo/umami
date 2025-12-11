@@ -1,14 +1,13 @@
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma, Report } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
+import { PageResult, PageParams } from '@/lib/types';
 import ReportFindManyArgs = Prisma.ReportFindManyArgs;
 
-async function findReport(criteria: Prisma.ReportFindUniqueArgs) {
+async function findReport(criteria: Prisma.ReportFindUniqueArgs): Promise<Report> {
   return prisma.client.report.findUnique(criteria);
 }
 
-export async function getReport(reportId: string) {
+export async function getReport(reportId: string): Promise<Report> {
   return findReport({
     where: {
       id: reportId,
@@ -16,8 +15,11 @@ export async function getReport(reportId: string) {
   });
 }
 
-export async function getReports(criteria: ReportFindManyArgs, filters: QueryFilters = {}) {
-  const { search } = filters;
+export async function getReports(
+  criteria: ReportFindManyArgs,
+  pageParams: PageParams = {},
+): Promise<PageResult<Report[]>> {
+  const { search } = pageParams;
 
   const where: Prisma.ReportWhereInput = {
     ...criteria.where,
@@ -43,10 +45,13 @@ export async function getReports(criteria: ReportFindManyArgs, filters: QueryFil
     ]),
   };
 
-  return prisma.pagedQuery('report', { ...criteria, where }, filters);
+  return prisma.pagedQuery('report', { ...criteria, where }, pageParams);
 }
 
-export async function getUserReports(userId: string, filters?: QueryFilters) {
+export async function getUserReports(
+  userId: string,
+  filters?: PageParams,
+): Promise<PageResult<Report[]>> {
   return getReports(
     {
       where: {
@@ -65,7 +70,10 @@ export async function getUserReports(userId: string, filters?: QueryFilters) {
   );
 }
 
-export async function getWebsiteReports(websiteId: string, filters: QueryFilters = {}) {
+export async function getWebsiteReports(
+  websiteId: string,
+  filters: PageParams = {},
+): Promise<PageResult<Report[]>> {
   return getReports(
     {
       where: {
@@ -76,14 +84,17 @@ export async function getWebsiteReports(websiteId: string, filters: QueryFilters
   );
 }
 
-export async function createReport(data: Prisma.ReportUncheckedCreateInput) {
+export async function createReport(data: Prisma.ReportUncheckedCreateInput): Promise<Report> {
   return prisma.client.report.create({ data });
 }
 
-export async function updateReport(reportId: string, data: any) {
+export async function updateReport(
+  reportId: string,
+  data: Prisma.ReportUpdateInput,
+): Promise<Report> {
   return prisma.client.report.update({ where: { id: reportId }, data });
 }
 
-export async function deleteReport(reportId: string) {
+export async function deleteReport(reportId: string): Promise<Report> {
   return prisma.client.report.delete({ where: { id: reportId } });
 }

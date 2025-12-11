@@ -10,9 +10,9 @@ export function getQueryString(params: object = {}): string {
   return searchParams.toString();
 }
 
-export function buildPath(path: string, params: object = {}): string {
+export function buildUrl(url: string, params: object = {}): string {
   const queryString = getQueryString(params);
-  return queryString ? `${path}?${queryString}` : path;
+  return `${url}${queryString && '?' + queryString}`;
 }
 
 export function safeDecodeURI(s: string | undefined | null): string | undefined | null {
@@ -22,7 +22,7 @@ export function safeDecodeURI(s: string | undefined | null): string | undefined 
 
   try {
     return decodeURI(s);
-  } catch {
+  } catch (e) {
     return s;
   }
 }
@@ -34,16 +34,7 @@ export function safeDecodeURIComponent(s: string | undefined | null): string | u
 
   try {
     return decodeURIComponent(s);
-  } catch {
+  } catch (e) {
     return s;
-  }
-}
-
-export function isValidUrl(url: string) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
   }
 }

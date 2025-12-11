@@ -1,20 +1,18 @@
 import { z } from 'zod';
-import { getQueryFilters, parseRequest } from '@/lib/request';
-import { json, unauthorized } from '@/lib/response';
-import { filterParams, pagingParams, searchParams } from '@/lib/schema';
-import { canViewWebsite } from '@/permissions';
-import { getWebsiteEvents } from '@/queries/sql';
+import { parseRequest } from '@/lib/request';
+import { unauthorized, json } from '@/lib/response';
+import { canViewWebsite } from '@/lib/auth';
+import { pagingParams } from '@/lib/schema';
+import { getWebsiteEvents } from '@/queries';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ websiteId: string }> },
 ) {
   const schema = z.object({
-    startAt: z.coerce.number().optional(),
-    endAt: z.coerce.number().optional(),
-    ...filterParams,
+    startAt: z.coerce.number().int(),
+    endAt: z.coerce.number().int(),
     ...pagingParams,
-    ...searchParams,
   });
 
   const { auth, query, error } = await parseRequest(request, schema);
@@ -24,14 +22,16 @@ export async function GET(
   }
 
   const { websiteId } = await params;
+  const { startAt, endAt } = query;
 
   if (!(await canViewWebsite(auth, websiteId))) {
     return unauthorized();
   }
 
-  const filters = await getQueryFilters(query, websiteId);
+  const startDate = new Date(+startAt);
+  const endDate = new Date(+endAt);
 
-  const data = await getWebsiteEvents(websiteId, filters);
+  const data = await getWebsiteEvents(websiteId, { startDate, endDate }, query);
 
   return json(data);
 }

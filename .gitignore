@@ -4,23 +4,21 @@
 node_modules
 .pnp
 .pnp.js
-.pnpm-store
-package-lock.json
 
 # testing
 /coverage
 
 # next.js
-/.next
-/out
+/.next/
+/out/
+/prisma/
+/src/generated/
 
 # production
 /build
 /public/script.js
 /geo
 /dist
-/generated
-/src/generated
 
 # misc
 .DS_Store

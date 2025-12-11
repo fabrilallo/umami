@@ -1,24 +1,17 @@
 import clickhouse from '@/lib/clickhouse';
-import { EVENT_COLUMNS, FILTER_COLUMNS, SESSION_COLUMNS } from '@/lib/constants';
+import { EVENT_COLUMNS, EVENT_TYPE, FILTER_COLUMNS, SESSION_COLUMNS } from '@/lib/constants';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getPageviewMetrics';
-
-export interface PageviewMetricsParameters {
-  type: string;
-  limit?: number | string;
-  offset?: number | string;
-}
-
-export interface PageviewMetricsData {
-  x: string;
-  y: number;
-}
+import { QueryFilters } from '@/lib/types';
 
 export async function getPageviewMetrics(
-  ...args: [websiteId: string, parameters: PageviewMetricsParameters, filters: QueryFilters]
+  ...args: [
+    websiteId: string,
+    type: string,
+    filters: QueryFilters,
+    limit?: number | string,
+    offset?: number | string,
+  ]
 ) {
   return runQuery({
     [PRISMA]: () => relationalQuery(...args),
@@ -28,16 +21,18 @@ export async function getPageviewMetrics(
 
 async function relationalQuery(
   websiteId: string,
-  parameters: PageviewMetricsParameters,
+  type: string,
   filters: QueryFilters,
-): Promise<PageviewMetricsData[]> {
-  const { type, limit = 500, offset = 0 } = parameters;
-  let column = FILTER_COLUMNS[type] || type;
+  limit: number | string = 500,
+  offset: number | string = 0,
+) {
+  const column = FILTER_COLUMNS[type] || type;
   const { rawQuery, parseFilters } = prisma;
-  const { filterQuery, joinSessionQuery, cohortQuery, queryParams } = parseFilters(
+  const { filterQuery, cohortQuery, joinSession, params } = await parseFilters(
+    websiteId,
     {
       ...filters,
-      websiteId,
+      eventType: column === 'event_name' ? EVENT_TYPE.customEvent : EVENT_TYPE.pageView,
     },
     { joinSession: SESSION_COLUMNS.includes(type) },
   );
@@ -51,21 +46,20 @@ async function relationalQuery(
   }
 
   if (type === 'entry' || type === 'exit') {
-    const order = type === 'entry' ? 'asc' : 'desc';
-    column = `x.${column}`;
+    const aggregrate = type === 'entry' ? 'min' : 'max';
 
     entryExitQuery = `
       join (
-        select distinct on (visit_id)
-          visit_id,
-          url_path
+        select visit_id,
+            ${aggregrate}(created_at) target_created_at
         from website_event
         where website_event.website_id = {{websiteId::uuid}}
           and website_event.created_at between {{startDate}} and {{endDate}}
-          and website_event.event_type != 2
-        order by visit_id, created_at ${order}
+          and event_type = {{eventType}}
+        group by visit_id
       ) x
       on x.visit_id = website_event.visit_id
+          and x.target_created_at = website_event.created_at
     `;
   }
 
@@ -75,11 +69,11 @@ async function relationalQuery(
       count(distinct website_event.session_id) as y
     from website_event
     ${cohortQuery}
-    ${joinSessionQuery}
+    ${joinSession}
     ${entryExitQuery}
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
-      and website_event.event_type != 2
+      and event_type = {{eventType}}
       ${excludeDomain}
       ${filterQuery}
     group by 1
@@ -87,22 +81,22 @@ async function relationalQuery(
     limit ${limit}
     offset ${offset}
     `,
-    { ...queryParams, ...parameters },
-    FUNCTION_NAME,
+    params,
   );
 }
 
 async function clickhouseQuery(
   websiteId: string,
-  parameters: PageviewMetricsParameters,
+  type: string,
   filters: QueryFilters,
+  limit: number | string = 500,
+  offset: number | string = 0,
 ): Promise<{ x: string; y: number }[]> {
-  const { type, limit = 500, offset = 0 } = parameters;
-  let column = FILTER_COLUMNS[type] || type;
+  const column = FILTER_COLUMNS[type] || type;
   const { rawQuery, parseFilters } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
+    eventType: column === 'event_name' ? EVENT_TYPE.customEvent : EVENT_TYPE.pageView,
   });
 
   let sql = '';
@@ -116,18 +110,18 @@ async function clickhouseQuery(
     }
 
     if (type === 'entry' || type === 'exit') {
-      const aggregrate = type === 'entry' ? 'argMin' : 'argMax';
-      column = `x.${column}`;
+      const aggregrate = type === 'entry' ? 'min' : 'max';
 
       entryExitQuery = `
       JOIN (select visit_id,
-          ${aggregrate}(url_path, created_at) url_path
+          ${aggregrate}(created_at) target_created_at
       from website_event
       where website_id = {websiteId:UUID}
         and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-        and event_type != 2
+        and event_type = {eventType:UInt32}
       group by visit_id) x
-      ON x.visit_id = website_event.visit_id`;
+      ON x.visit_id = website_event.visit_id
+          and x.target_created_at = website_event.created_at`;
     }
 
     sql = `
@@ -138,7 +132,7 @@ async function clickhouseQuery(
     ${entryExitQuery}
     where website_id = {websiteId:UUID}
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-      and event_type != 2
+      and event_type = {eventType:UInt32}
       ${excludeDomain}
       ${filterQuery}
     group by x
@@ -172,11 +166,11 @@ async function clickhouseQuery(
     from (
       select session_id s, 
         ${columnQuery} as t
-      from website_event_stats_hourly as website_event
+      from website_event_stats_hourly website_event
       ${cohortQuery}
       where website_id = {websiteId:UUID}
         and created_at between {startDate:DateTime64} and {endDate:DateTime64}
-        and event_type != 2
+        and event_type = {eventType:UInt32}
         ${excludeDomain}
         ${filterQuery}
       ${groupByQuery}) as g
@@ -187,5 +181,5 @@ async function clickhouseQuery(
     `;
   }
 
-  return rawQuery(sql, { ...queryParams, ...parameters }, FUNCTION_NAME);
+  return rawQuery(sql, params);
 }

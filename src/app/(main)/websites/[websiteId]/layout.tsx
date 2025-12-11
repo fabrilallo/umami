@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
-import { WebsiteLayout } from '@/app/(main)/websites/[websiteId]/WebsiteLayout';
+import { Metadata } from 'next';
+import WebsiteProvider from './WebsiteProvider';
 
 export default async function ({
   children,
@@ -10,7 +10,7 @@ export default async function ({
 }) {
   const { websiteId } = await params;
 
-  return <WebsiteLayout websiteId={websiteId}>{children}</WebsiteLayout>;
+  return <WebsiteProvider websiteId={websiteId}>{children}</WebsiteProvider>;
 }
 
 export const metadata: Metadata = {

@@ -1,7 +1,8 @@
-import { Icon, LoadingButton, Tooltip, TooltipTrigger } from '@umami/react-zen';
-import { useDateRange, useMessages } from '@/components/hooks';
-import { RefreshCw } from '@/components/icons';
+import { LoadingButton, Icon, TooltipPopup } from 'react-basics';
 import { setWebsiteDateRange } from '@/store/websites';
+import { useDateRange } from '@/components/hooks';
+import Icons from '@/components/icons';
+import { useMessages } from '@/components/hooks';
 
 export function RefreshButton({
   websiteId,
@@ -11,7 +12,7 @@ export function RefreshButton({
   isLoading?: boolean;
 }) {
   const { formatMessage, labels } = useMessages();
-  const { dateRange } = useDateRange();
+  const { dateRange } = useDateRange(websiteId);
 
   function handleClick() {
     if (!isLoading && dateRange) {
@@ -20,13 +21,14 @@ export function RefreshButton({
   }
 
   return (
-    <TooltipTrigger>
-      <LoadingButton isLoading={isLoading} onPress={handleClick}>
+    <TooltipPopup label={formatMessage(labels.refresh)}>
+      <LoadingButton isLoading={isLoading} onClick={handleClick}>
         <Icon>
-          <RefreshCw />
+          <Icons.Refresh />
         </Icon>
       </LoadingButton>
-      <Tooltip>{formatMessage(labels.refresh)}</Tooltip>
-    </TooltipTrigger>
+    </TooltipPopup>
   );
 }
+
+export default RefreshButton;

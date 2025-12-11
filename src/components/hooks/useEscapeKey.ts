@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useCallback, useEffect } from 'react';
+import { useEffect, useCallback, KeyboardEvent } from 'react';
 
 export function useEscapeKey(handler: (event: KeyboardEvent) => void) {
   const escFunction = useCallback((event: KeyboardEvent) => {
@@ -17,3 +17,5 @@ export function useEscapeKey(handler: (event: KeyboardEvent) => void) {
 
   return null;
 }
+
+export default useEscapeKey;

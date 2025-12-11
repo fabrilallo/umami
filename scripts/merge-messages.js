@@ -1,13 +1,10 @@
 /* eslint-disable no-console */
-import fs from 'node:fs';
-import path from 'node:path';
-import { createRequire } from 'module';
-import prettier from 'prettier';
-
-const require = createRequire(import.meta.url);
-
+const fs = require('fs');
+const path = require('path');
+const prettier = require('prettier');
 const messages = require('../build/extracted-messages.json');
-const dest = path.resolve(process.cwd(), 'src/lang');
+
+const dest = path.resolve(__dirname, '../src/lang');
 const files = fs.readdirSync(dest);
 const keys = Object.keys(messages).sort();
 
@@ -17,7 +14,7 @@ with the existing files under `lang`. Any newly added
 keys will be printed to the console.
  */
 files.forEach(file => {
-  const lang = require(path.resolve(process.cwd(), `src/lang/${file}`));
+  const lang = require(`../src/lang/${file}`);
 
   console.log(`Merging ${file}`);
 

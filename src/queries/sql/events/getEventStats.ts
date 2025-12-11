@@ -2,15 +2,7 @@ import clickhouse from '@/lib/clickhouse';
 import { EVENT_TYPE } from '@/lib/constants';
 import { CLICKHOUSE, PRISMA, runQuery } from '@/lib/db';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
-
-const FUNCTION_NAME = 'getEventStats';
-
-interface WebsiteEventMetric {
-  x: string;
-  t: string;
-  y: number;
-}
+import { QueryFilters, WebsiteEventMetric } from '@/lib/types';
 
 export async function getEventStats(
   ...args: [websiteId: string, filters: QueryFilters]
@@ -24,9 +16,8 @@ export async function getEventStats(
 async function relationalQuery(websiteId: string, filters: QueryFilters) {
   const { timezone = 'utc', unit = 'day' } = filters;
   const { rawQuery, getDateSQL, parseFilters } = prisma;
-  const { filterQuery, cohortQuery, joinSessionQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, joinSession, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
     eventType: EVENT_TYPE.customEvent,
   });
 
@@ -38,15 +29,15 @@ async function relationalQuery(websiteId: string, filters: QueryFilters) {
       count(*) y
     from website_event
     ${cohortQuery}
-    ${joinSessionQuery}
+    ${joinSession}
     where website_event.website_id = {{websiteId::uuid}}
       and website_event.created_at between {{startDate}} and {{endDate}}
+      and event_type = {{eventType}}
       ${filterQuery}
     group by 1, 2
     order by 2
     `,
-    queryParams,
-    FUNCTION_NAME,
+    params,
   );
 }
 
@@ -56,9 +47,8 @@ async function clickhouseQuery(
 ): Promise<{ x: string; t: string; y: number }[]> {
   const { timezone = 'UTC', unit = 'day' } = filters;
   const { rawQuery, getDateSQL, parseFilters } = clickhouse;
-  const { filterQuery, cohortQuery, queryParams } = parseFilters({
+  const { filterQuery, cohortQuery, params } = await parseFilters(websiteId, {
     ...filters,
-    websiteId,
     eventType: EVENT_TYPE.customEvent,
   });
 
@@ -74,6 +64,7 @@ async function clickhouseQuery(
     ${cohortQuery}
     where website_id = {websiteId:UUID}
       and created_at between {startDate:DateTime64} and {endDate:DateTime64}
+      and event_type = {eventType:UInt32}
       ${filterQuery}
     group by x, t
     order by t
@@ -97,5 +88,5 @@ async function clickhouseQuery(
     `;
   }
 
-  return rawQuery(sql, queryParams, FUNCTION_NAME);
+  return rawQuery(sql, params);
 }

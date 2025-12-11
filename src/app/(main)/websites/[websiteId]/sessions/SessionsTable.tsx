@@ -1,58 +1,60 @@
-import { DataColumn, DataTable, type DataTableProps } from '@umami/react-zen';
 import Link from 'next/link';
-import { Avatar } from '@/components/common/Avatar';
-import { DateDistance } from '@/components/common/DateDistance';
-import { TypeIcon } from '@/components/common/TypeIcon';
-import { useFormat, useMessages, useNavigation } from '@/components/hooks';
+import { GridColumn, GridTable } from 'react-basics';
+import { useFormat, useMessages, useTimezone } from '@/components/hooks';
+import Avatar from '@/components/common/Avatar';
+import styles from './SessionsTable.module.css';
+import TypeIcon from '@/components/common/TypeIcon';
 
-export function SessionsTable(props: DataTableProps) {
+export function SessionsTable({ data = [] }: { data: any[]; showDomain?: boolean }) {
+  const { formatTimezoneDate } = useTimezone();
   const { formatMessage, labels } = useMessages();
   const { formatValue } = useFormat();
-  const { updateParams } = useNavigation();
 
   return (
-    <DataTable {...props}>
-      <DataColumn id="id" label={formatMessage(labels.session)} width="100px">
-        {(row: any) => (
-          <Link href={updateParams({ session: row.id })}>
-            <Avatar seed={row.id} size={32} />
+    <GridTable data={data}>
+      <GridColumn name="id" label={formatMessage(labels.session)} width="100px">
+        {row => (
+          <Link href={`sessions/${row.id}`} className={styles.link}>
+            <Avatar key={row.id} seed={row.id} size={64} />
           </Link>
         )}
-      </DataColumn>
-      <DataColumn id="visits" label={formatMessage(labels.visits)} width="80px" />
-      <DataColumn id="views" label={formatMessage(labels.views)} width="80px" />
-      <DataColumn id="country" label={formatMessage(labels.country)}>
-        {(row: any) => (
+      </GridColumn>
+      <GridColumn name="visits" label={formatMessage(labels.visits)} width="100px" />
+      <GridColumn name="views" label={formatMessage(labels.views)} width="100px" />
+      <GridColumn name="country" label={formatMessage(labels.country)}>
+        {row => (
           <TypeIcon type="country" value={row.country}>
             {formatValue(row.country, 'country')}
           </TypeIcon>
         )}
-      </DataColumn>
-      <DataColumn id="city" label={formatMessage(labels.city)} />
-      <DataColumn id="browser" label={formatMessage(labels.browser)}>
-        {(row: any) => (
+      </GridColumn>
+      <GridColumn name="city" label={formatMessage(labels.city)} />
+      <GridColumn name="browser" label={formatMessage(labels.browser)}>
+        {row => (
           <TypeIcon type="browser" value={row.browser}>
             {formatValue(row.browser, 'browser')}
           </TypeIcon>
         )}
-      </DataColumn>
-      <DataColumn id="os" label={formatMessage(labels.os)}>
-        {(row: any) => (
+      </GridColumn>
+      <GridColumn name="os" label={formatMessage(labels.os)}>
+        {row => (
           <TypeIcon type="os" value={row.os}>
             {formatValue(row.os, 'os')}
           </TypeIcon>
         )}
-      </DataColumn>
-      <DataColumn id="device" label={formatMessage(labels.device)}>
-        {(row: any) => (
+      </GridColumn>
+      <GridColumn name="device" label={formatMessage(labels.device)}>
+        {row => (
           <TypeIcon type="device" value={row.device}>
             {formatValue(row.device, 'device')}
           </TypeIcon>
         )}
-      </DataColumn>
-      <DataColumn id="lastAt" label={formatMessage(labels.lastSeen)}>
-        {(row: any) => <DateDistance date={new Date(row.createdAt)} />}
-      </DataColumn>
-    </DataTable>
+      </GridColumn>
+      <GridColumn name="lastAt" label={formatMessage(labels.lastSeen)}>
+        {row => formatTimezoneDate(row.createdAt, 'PPPpp')}
+      </GridColumn>
+    </GridTable>
   );
 }
+
+export default SessionsTable;

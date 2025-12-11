@@ -1,12 +1,11 @@
-import type { Prisma } from '@/generated/prisma/client';
 import prisma from '@/lib/prisma';
-import type { QueryFilters } from '@/lib/types';
+import { Prisma, Segment } from '@prisma/client';
 
-async function findSegment(criteria: Prisma.SegmentFindUniqueArgs) {
-  return prisma.client.segment.findUnique(criteria);
+async function findSegment(criteria: Prisma.SegmentFindUniqueArgs): Promise<Segment> {
+  return prisma.client.Segment.findUnique(criteria);
 }
 
-export async function getSegment(segmentId: string) {
+export async function getSegment(segmentId: string): Promise<Segment> {
   return findSegment({
     where: {
       id: segmentId,
@@ -14,48 +13,33 @@ export async function getSegment(segmentId: string) {
   });
 }
 
-export async function getSegments(criteria: Prisma.SegmentFindManyArgs, filters: QueryFilters) {
-  const { search } = filters;
-  const { getSearchParameters, pagedQuery } = prisma;
-
-  const where: Prisma.SegmentWhereInput = {
-    ...criteria.where,
-    ...getSearchParameters(search, [
-      {
-        name: 'contains',
-      },
-    ]),
-  };
-
-  return pagedQuery('segment', { ...criteria, where }, filters);
-}
-
-export async function getWebsiteSegment(websiteId: string, segmentId: string) {
+export async function getWebsiteSegment(
+  websiteId: string,
+  type: string,
+  name: string,
+): Promise<Segment> {
   return prisma.client.segment.findFirst({
-    where: { id: segmentId, websiteId },
+    where: { websiteId, type, name },
   });
 }
 
-export async function getWebsiteSegments(websiteId: string, type: string, filters?: QueryFilters) {
-  return getSegments(
-    {
-      where: {
-        websiteId,
-        type,
-      },
-    },
-    filters,
-  );
+export async function getWebsiteSegments(websiteId: string, type: string): Promise<Segment[]> {
+  return prisma.client.Segment.findMany({
+    where: { websiteId, type },
+  });
 }
 
-export async function createSegment(data: Prisma.SegmentUncheckedCreateInput) {
-  return prisma.client.segment.create({ data });
+export async function createSegment(data: Prisma.SegmentUncheckedCreateInput): Promise<Segment> {
+  return prisma.client.Segment.create({ data });
 }
 
-export async function updateSegment(SegmentId: string, data: Prisma.SegmentUpdateInput) {
-  return prisma.client.segment.update({ where: { id: SegmentId }, data });
+export async function updateSegment(
+  SegmentId: string,
+  data: Prisma.SegmentUpdateInput,
+): Promise<Segment> {
+  return prisma.client.Segment.update({ where: { id: SegmentId }, data });
 }
 
-export async function deleteSegment(SegmentId: string) {
-  return prisma.client.segment.delete({ where: { id: SegmentId } });
+export async function deleteSegment(SegmentId: string): Promise<Segment> {
+  return prisma.client.Segment.delete({ where: { id: SegmentId } });
 }

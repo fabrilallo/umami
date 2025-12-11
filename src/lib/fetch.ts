@@ -1,18 +1,10 @@
-import { buildPath } from '@/lib/url';
-
-export interface ErrorResponse {
-  error: {
-    status: number;
-    message: string;
-    code?: string;
-  };
-}
+import { buildUrl } from '@/lib/url';
 
 export interface FetchResponse {
   ok: boolean;
   status: number;
   data?: any;
-  error?: ErrorResponse;
+  error?: any;
 }
 
 export async function request(
@@ -36,23 +28,24 @@ export async function request(
     return {
       ok: res.ok,
       status: res.status,
-      data,
+      data: res.ok ? data : undefined,
+      error: res.ok ? undefined : data,
     };
   });
 }
 
-export async function httpGet(path: string, params: object = {}, headers: object = {}) {
-  return request('GET', buildPath(path, params), undefined, headers);
+export async function httpGet(url: string, params: object = {}, headers: object = {}) {
+  return request('GET', buildUrl(url, params), undefined, headers);
 }
 
-export async function httpDelete(path: string, params: object = {}, headers: object = {}) {
-  return request('DELETE', buildPath(path, params), undefined, headers);
+export async function httpDelete(url: string, params: object = {}, headers: object = {}) {
+  return request('DELETE', buildUrl(url, params), undefined, headers);
 }
 
-export async function httpPost(path: string, params: object = {}, headers: object = {}) {
-  return request('POST', path, JSON.stringify(params), headers);
+export async function httpPost(url: string, params: object = {}, headers: object = {}) {
+  return request('POST', url, JSON.stringify(params), headers);
 }
 
-export async function httpPut(path: string, params: object = {}, headers: object = {}) {
-  return request('PUT', path, JSON.stringify(params), headers);
+export async function httpPut(url: string, params: object = {}, headers: object = {}) {
+  return request('PUT', url, JSON.stringify(params), headers);
 }
